@@ -1,7 +1,6 @@
 # cds-dbm 
-## Database Migrations for the SAP Cloud Application Programming Model (CAP)
 
-_cds-dbm_ is a library that adds delta deployment and database migration support to the Node.js Service SDK (<a href="https://www.npmjs.com/package/@sap/cds">@sap/cds</a>) of the <a href="https://cap.cloud.sap/docs/about/">SAP Cloud Application Programming Model</a>. The library offers a set of cli commands to either have automated delta deployments of a defined cds data model or to have a full fledged migration concept at hand when building more complex applications.
+_cds-dbm_ is a library that adds **delta deployment** and **database migration** support to the Node.js Service SDK (<a href="https://www.npmjs.com/package/@sap/cds">@sap/cds</a>) of the <a href="https://cap.cloud.sap/docs/about/">**SAP Cloud Application Programming Model**</a>. The library offers a set of cli commands to either have automated delta deployments of a defined cds data model or to have a full fledged migration concept at hand when building more complex applications.
 Internally _cds-dbm_ is based on the popular Java framework <a href="https://www.liquibase.org/">liquibase</a> for handling database deltas and migrations.
 
 Currently _cds-dbm_ offers support for the following databases:
