@@ -1,0 +1,85 @@
+{
+  "name": "cds-dbm",
+  "version": "0.0.1",
+  "description": "Database deployment and migrations for SAP CAP",
+  "main": "index.js",
+  "scripts": {
+    "test": "run-s test:pg:up jest test:pg:down",
+    "jest": "jest --runInBand",
+    "test:pg:up-nobg": "docker-compose -f test/docker/postgres.yml up",
+    "test:pg:up": "docker-compose -f test/docker/postgres.yml up -d",
+    "test:pg:down": "docker-compose -f test/docker/postgres.ymldown",
+    "lint": "prettier -c . && eslint '*.{js,ts,tsx}'",
+    "release": "standard-version",
+    "watch:ts": "tsc -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikezaschka/cds-dbm.git"
+  },
+  "keywords": [
+    "sap",
+    "cap",
+    "cds",
+    "PostgreSQL",
+    "postgres"
+  ],
+  "author": "Mike Zaschka",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mikezaschka/cds-dbm/issues"
+  },
+  "homepage": "https://github.com/mikezaschka/cds-dbm#readme",
+  "dependencies": {
+    "@sap/cds": "^4.1.9",
+    "@types/js-yaml": "^3.12.5",
+    "@types/pg": "^7.14.5",
+    "@types/sqlite3": "^3.1.6",
+    "js-yaml": "^3.14.0",
+    "liquibase": "^1.0.1",
+    "pg": "^8.3.3",
+    "yargs": "^16.0.3"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
+    "@sap/hana-client": "^2.6.54",
+    "@types/jest": "^26.0.14",
+    "@types/yargs": "^15.0.7",
+    "cds-pg": "0.0.18",
+    "eslint": "^7.10.0",
+    "eslint-plugin-jest": "^24.0.2",
+    "express": "^4.17.1",
+    "husky": "^4.3.0",
+    "jest": "^26.4.2",
+    "lint-staged": "^10.4.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "2.1.2",
+    "sqlite3": "^5.0.0",
+    "standard-version": "^9.0.0",
+    "supertest": "^5.0.0",
+    "ts-jest": "^26.4.1",
+    "typescript": "^4.0.3",
+    "underscore": "^1.11.0",
+    "underscore.string": "^3.3.5"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.(js|json)": [
+      "prettier --write"
+    ],
+    "*.js": "eslint --cache --fix"
+  },
+  "prettier": {
+    "semi": false,
+    "printWidth": 120,
+    "arrowParens": "always",
+    "trailingComma": "es5",
+    "singleQuote": true
+  }
+}
