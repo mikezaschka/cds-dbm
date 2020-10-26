@@ -55,6 +55,8 @@ Since the project uses liquibase internally, a Java Runtime Environment (JRE) in
 
 Simply add this package to your [CAP](https://cap.cloud.sap/docs/) project by running:
 
+**THIS WILL WORK ONCE PUBLISHED TO NPM**
+
 ```bash
 npm install cds-dbm
 ```
