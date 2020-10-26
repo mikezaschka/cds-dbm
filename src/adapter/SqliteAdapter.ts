@@ -5,6 +5,15 @@ import { liquibaseOptions } from './../config'
 import { sortByCasadingViews } from '../util'
 
 export class SqliteAdapter extends BaseAdapter {
+  _deployCdsToReferenceDatabase(): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+  _synchronizeCloneDatabase(): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+  _dropViewsFromCloneDatabase(): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
   liquibaseOptionsFor(cmd: string): liquibaseOptions {
     const credentials = this.options.service.credentials
 
@@ -18,9 +27,10 @@ export class SqliteAdapter extends BaseAdapter {
 
     switch (cmd) {
       case 'diffChangeLog':
-        liquibaseOptions.referenceUrl = `jdbc:sqlite:${this.options.deploy.database!.reference}`
+        liquibaseOptions.referenceUrl = `jdbc:sqlite:${this.options.migrations.database!.reference}`
         break
       case 'update':
+      case 'updateSQL':
       default:
         break
     }
@@ -28,10 +38,10 @@ export class SqliteAdapter extends BaseAdapter {
     return liquibaseOptions
   }
 
-  _syncMigrationDatabase = async () => {
+  _deployToReferenceDatabase = async () => {
     const dbPath = this.options.migrations.database!.reference
     const model = await cds.load(this.options.service.model)
-    let cdssql:string[] = cds.compile.to.sql(model) as unknown as string[] 
+    let cdssql: string[] = (cds.compile.to.sql(model) as unknown) as string[]
     cdssql.sort(sortByCasadingViews)
 
     if (fs.existsSync(dbPath)) {
@@ -50,8 +60,8 @@ export class SqliteAdapter extends BaseAdapter {
     db.close()
   }
 
-  async deploy() {
-    super.deploy()
+  async deploy(args) {
+    super.deploy(args)
     fs.unlinkSync(this.options.migrations.database!.reference)
   }
 }

@@ -1,13 +1,51 @@
 import { Client } from 'pg'
+import fs from 'fs'
+import * as cdsg from '@sap/cds'
+const cds = cdsg as any
+import liquibase from '../liquibase'
 import { BaseAdapter } from './BaseAdapter'
 import { liquibaseOptions } from './../config'
-import { sortByCasadingViews } from '../util'
 import { PostgresDatabase } from './../types/PostgresDatabase'
 
 export class PostgresAdapter extends BaseAdapter {
   /**
+   *
+   */
+  async _dropViewsFromCloneDatabase(): Promise<void> {
+    const credentials = this.options.service.credentials
+    const cloneSchema = this.options.migrations.schema!.clone
+    const client = new Client({
+      user: credentials.user,
+      password: credentials.password,
+      host: credentials.host,
+      database: credentials.database,
+      port: credentials.port,
+    })
+
+    try {
+      await client.connect()
+      await client.query(`DROP SCHEMA IF EXISTS ${cloneSchema} CASCADE`)
+      await client.query(`CREATE SCHEMA ${cloneSchema}`)
+      await client.query(`SET search_path TO ${cloneSchema};`)
+
+      const serviceInstance = cds.services[this.serviceKey] as PostgresDatabase
+      for (const query of this.cdsSQL) {
+        await client.query(serviceInstance.cdssql2pgsql(query))
+        const [, table, entity] = query.match(/^\s*CREATE (?:(TABLE)|VIEW)\s+"?([^\s(]+)"?/im) || []
+        if (!table) {
+          await client.query(`DROP VIEW IF EXISTS ${entity} CASCADE`)
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      await client.end()
+    }
+  }
+
+  /**
    * Returns the liquidbase options for the given command.
-   * 
+   *
    * @override
    * @param {string} cmd
    */
@@ -32,6 +70,8 @@ export class PostgresAdapter extends BaseAdapter {
         liquibaseOptions.referenceDefaultSchemaName = this.options.migrations.schema!.reference
         break
       case 'update':
+      case 'updateSQL':
+      case 'dropAll':
       default:
         break
     }
@@ -39,7 +79,45 @@ export class PostgresAdapter extends BaseAdapter {
     return liquibaseOptions
   }
 
-  async _syncMigrationDatabase() {
+  async _synchronizeCloneDatabase() {
+    const credentials = this.options.service.credentials
+    const cloneSchema = this.options.migrations.schema!.clone
+    const temporaryChangelogFile = `${this.options.migrations.deploy.tmpFile}`
+
+    const client = new Client({
+      user: credentials.user,
+      password: credentials.password,
+      host: credentials.host,
+      database: credentials.database,
+      port: credentials.port,
+    })
+    await client.connect()
+    await client.query(`DROP SCHEMA IF EXISTS ${cloneSchema} CASCADE`)
+    await client.query(`CREATE SCHEMA ${cloneSchema}`)
+    await client.end()
+
+    // Basically create a copy of the schema
+    let liquibaseOptions = this.liquibaseOptionsFor('diffChangeLog')
+    liquibaseOptions.defaultSchemaName = cloneSchema
+    liquibaseOptions.referenceDefaultSchemaName = this.options.migrations.schema!.default
+    liquibaseOptions.changeLogFile = temporaryChangelogFile
+
+    await liquibase(liquibaseOptions).run('diffChangeLog')
+
+    // Now deploy the copy to the clone
+    liquibaseOptions = this.liquibaseOptionsFor('update')
+    liquibaseOptions.defaultSchemaName = cloneSchema
+    liquibaseOptions.changeLogFile = temporaryChangelogFile
+
+    await liquibase(liquibaseOptions).run('update')
+
+    fs.unlinkSync(temporaryChangelogFile)
+  }
+
+  /**
+   * @override
+   */
+  async _deployCdsToReferenceDatabase() {
     const credentials = this.options.service.credentials
     const referenceSchema = this.options.migrations.schema!.reference
     const client = new Client({
@@ -54,13 +132,8 @@ export class PostgresAdapter extends BaseAdapter {
     await client.query(`CREATE SCHEMA ${referenceSchema}`)
     await client.query(`SET search_path TO ${referenceSchema};`)
 
-    const model = await cds.load(this.options.service.model)
     const serviceInstance = cds.services[this.serviceKey] as PostgresDatabase
-
-    let cdssql: string[] = (cds.compile.to.sql(model) as unknown) as string[]
-    cdssql.sort(sortByCasadingViews)
-
-    for (const query of cdssql) {
+    for (const query of this.cdsSQL) {
       await client.query(serviceInstance.cdssql2pgsql(query))
     }
 

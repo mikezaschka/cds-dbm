@@ -1,8 +1,16 @@
 import { ConstructedQuery } from '@sap/cds/apis/ql'
 import liquibase from '../liquibase'
 import fs from 'fs'
-import yaml from 'js-yaml'
+import { Logger } from 'winston'
 import { configOptions, liquibaseOptions } from './../config'
+import { ChangeLog } from '../ChangeLog'
+import { sortByCasadingViews } from '../util'
+
+interface DeployOptions {
+  dryRun?: boolean
+  loadMode?: string
+  autoUndeploy?: boolean
+}
 
 /**
  *
@@ -10,6 +18,9 @@ import { configOptions, liquibaseOptions } from './../config'
 export abstract class BaseAdapter {
   serviceKey: string
   options: configOptions
+  logger: globalThis.Console
+  cdsSQL: string[]
+  cdsModel: unknown
 
   /**
    * The constructor
@@ -20,12 +31,26 @@ export abstract class BaseAdapter {
   constructor(serviceKey: string, options: configOptions) {
     this.serviceKey = serviceKey
     this.options = options
+    this.logger = global.console
   }
+
+  /**
+   * Fully deploy the cds data model to the reference database.
+   * The reference database needs to the cleared first.
+   *
+   * @abstract
+   */
+  abstract async _deployCdsToReferenceDatabase(): Promise<void>
 
   /**
    * @abstract
    */
-  abstract async _syncMigrationDatabase(): Promise<void>
+  abstract async _synchronizeCloneDatabase(): Promise<void>
+
+  /**
+   * @abstract
+   */
+  abstract async _dropViewsFromCloneDatabase(): Promise<void>
 
   /**
    * @abstract
@@ -33,50 +58,141 @@ export abstract class BaseAdapter {
   abstract liquibaseOptionsFor(cmd: string): liquibaseOptions
 
   /**
-   * 
+   * Drop tables and views from the database. If +dropAll+ is
+   * true, then the whole schema is dropped including non CDS
+   * tables/views.
+   *
+   * @param {boolean} dropAll
    */
-  public async drop() {
-    await this._dropEntities(this.serviceKey, false)
+  public async drop({ dropAll = false }) {
+    if (dropAll) {
+      let liquibaseOptions = this.liquibaseOptionsFor('dropAll')
+      await liquibase(liquibaseOptions).run('dropAll')
+    } else {
+      await this._dropCdsEntitiesFromDatabase(this.serviceKey, false)
+    }
   }
 
-  public async diff() {
-    await this._syncMigrationDatabase()
-    let liquibaseOptions = this.liquibaseOptionsFor('diff')
-    liquibaseOptions.outputFile = 'mydiff.txt'
+  public async load() {
+    // await _load_from_js(db, model)
+    // await _init_from_csv(db, model)
+    // await _init_from_json(db, model)
+  }
+
+  /**
+   * Creates a liquibase diff file containing differences between the default
+   * and the reference schema.
+   *
+   * @param {string} outputFile
+   */
+  public async diff(outputFile = 'diff.txt') {
+    // set the stage
+    await this.initCds()
+    await this._deployCdsToReferenceDatabase()
+
+    // run update to create internal liquibase tables
+    let liquibaseOptions = this.liquibaseOptionsFor('update')
+    liquibaseOptions.defaultSchemaName = this.options.migrations.schema.reference
+
+    // Revisit: Possible liquibase bug to not support changelogs by absolute path?
+    //liquibaseOptions.changeLogFile = `${__dirname}../../template/emptyChangelog.json`
+    const tmpChangelogPath = 'tmp/emptyChangelog.json'
+    fs.copyFileSync(`${__dirname}/../../template/emptyChangelog.json`, tmpChangelogPath)
+    liquibaseOptions.changeLogFile = tmpChangelogPath
+    await liquibase(liquibaseOptions).run('update')
+    fs.unlinkSync(tmpChangelogPath)
+
+    // create the diff
+    liquibaseOptions = this.liquibaseOptionsFor('diff')
+    liquibaseOptions.outputFile = outputFile
     await liquibase(liquibaseOptions).run('diff')
+
+    this.logger.log(`[cds-dbm] - diff file generated at ${liquibaseOptions.outputFile}`)
   }
 
-  public async deploy() {
-    await this._dropEntities(this.serviceKey)
-    await this._syncMigrationDatabase()
+  private async initCds() {
+    this.cdsModel = await cds.load(this.options.service.model)
+    this.cdsSQL = (cds.compile.to.sql(this.cdsModel) as unknown) as string[]
+    this.cdsSQL.sort(sortByCasadingViews)
+  }
 
-    const temporaryChangelogFile = 'tmp/__deploy.yml'
-    //const temporaryChangelogFile = `${this.options.deploy.tempChangelogFile}.${this.options.deploy.format}`
+  /**
+   *
+   * We use the clone and reference schema to identify the delta, because we need to initially drop
+   * all the views and we do not want to do this with a potential production database.
+   *
+   */
+  public async deploy({ autoUndeploy = false, loadMode = null, dryRun = false }: DeployOptions) {
+    await this.initCds()
 
+    this.logger.log(`[cds-dbm] - starting delta database deployment of service ${this.serviceKey}`)
+
+    const temporaryChangelogFile = `${this.options.migrations.deploy.tmpFile}`
+    if (fs.existsSync(temporaryChangelogFile)) {
+      fs.unlinkSync(temporaryChangelogFile)
+    }
+
+    // Setup the clone
+    await this._synchronizeCloneDatabase()
+
+    // Drop the known views from the clone
+    await this._dropViewsFromCloneDatabase()
+
+    // Create the initial changelog
     let liquibaseOptions = this.liquibaseOptionsFor('diffChangeLog')
+    liquibaseOptions.defaultSchemaName = this.options.migrations.schema.default
+    liquibaseOptions.referenceDefaultSchemaName = this.options.migrations.schema.clone
     liquibaseOptions.changeLogFile = temporaryChangelogFile
 
-    // Create the diff
+    await liquibase(liquibaseOptions).run('diffChangeLog')
+    const dropViewsChangeLog = ChangeLog.fromFile(temporaryChangelogFile)
+    fs.unlinkSync(temporaryChangelogFile)
+
+    // Deploy the current state to the reference database
+    await this._deployCdsToReferenceDatabase()
+
+    // Update the changelog with the real changes and added views
+    liquibaseOptions = this.liquibaseOptionsFor('diffChangeLog')
+    liquibaseOptions.defaultSchemaName = this.options.migrations.schema.clone
+    liquibaseOptions.changeLogFile = temporaryChangelogFile
+
     await liquibase(liquibaseOptions).run('diffChangeLog')
 
-    // Process the file
-    await this._reorderChangelog(temporaryChangelogFile)
+    const diffChangeLog = ChangeLog.fromFile(temporaryChangelogFile)
 
-    // Deploy to database
-    liquibaseOptions = this.liquibaseOptionsFor('update')
+    // Merge the changelogs
+    diffChangeLog.data.databaseChangeLog = dropViewsChangeLog.data.databaseChangeLog.concat(
+      diffChangeLog.data.databaseChangeLog
+    )
+
+    // Process the changelog
+    if (autoUndeploy) {
+      diffChangeLog.removeDropTableStatements()
+    }
+    diffChangeLog.reorderChangelog()
+    diffChangeLog.toFile(temporaryChangelogFile)
+
+    // Either log the update sql or deploy it to the database
+    const updateCmd = dryRun ? 'updateSQL' : 'update'
+    liquibaseOptions = this.liquibaseOptionsFor(updateCmd)
     liquibaseOptions.changeLogFile = temporaryChangelogFile
 
-    await liquibase(liquibaseOptions).run('--logLevel error', 'update')
+    const updateSQL: any = await liquibase(liquibaseOptions).run(updateCmd)
+    if (!dryRun) {
+      this.logger.log(`[cds-dbm] - delta successfully deployed to the database`)
+    } else {
+      this.logger.log(updateSQL.stdOut)
+    }
 
     fs.unlinkSync(temporaryChangelogFile)
   }
 
   /**
-   * Drops all known views from the database.
+   * Drops all known views (and tables) from the database.
    *
    * @param {string} service
    */
-  protected async _dropEntities(service: string, viewsOnly: boolean = true) {
+  protected async _dropCdsEntitiesFromDatabase(service: string, viewsOnly: boolean = true) {
     const model = await cds.load(this.options.service.model)
     const cdssql = cds.compile.to.sql(model)
     const dropViews = []
@@ -96,43 +212,5 @@ export abstract class BaseAdapter {
     await tx.run((dropViews as unknown) as ConstructedQuery)
     await tx.run((dropTables as unknown) as ConstructedQuery)
     return tx.commit()
-  }
-
-  /**
-   * The created changelog file needs to be sorted in order to work well.
-   * The sort order should be:
-   *
-   * - alter table statements (add_column, drop_column, ...)
-   * - create table statements
-   * - create view statements that are not based on other views
-   * - create view statements that are based on other views
-   *
-   * @param {string} changelog
-   */
-  async _reorderChangelog(changelog: string) {
-    let fileContents = fs.readFileSync(changelog, 'utf8')
-    let data: any = yaml.safeLoad(fileContents)
-
-    data.databaseChangeLog.sort((a: any, b: any) => {
-      if (a.changeSet.changes[0].createView || !b.changeSet.changes[0].createView) {
-        return 1
-      }
-      if (!a.changeSet.changes[0].createView || b.changeSet.changes[0].createView) {
-        return -1
-      }
-
-      if (a.changeSet.changes[0].createView || b.changeSet.changes[0].createView) {
-        if (a.changeSet.changes[0].createView.selectQuery.contains(b.changeSet.changes[0].createView.viewName)) {
-          return -1
-        }
-        if (b.changeSet.changes[0].createView.selectQuery.contains(a.changeSet.changes[0].createView.viewName)) {
-          return 1
-        }
-      }
-      return 0
-    })
-
-    let yamlStr = yaml.safeDump(data)
-    fs.writeFileSync(changelog, yamlStr, 'utf8')
   }
 }

@@ -1,7 +1,7 @@
 import { Client } from 'pg'
 import { PostgresDatabase } from '../../src/types/PostgresDatabase'
 
-const getTableNames = async (credentials) => {
+async function getTableNamesFromPostgres(credentials) {
   const client = new Client({
     user: credentials.user,
     password: credentials.password,
@@ -13,6 +13,24 @@ const getTableNames = async (credentials) => {
   const { rows } = await client.query(
     `SELECT table_name, table_type FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;`
   )
+  await client.end()
+
+  return rows
+}
+
+const extractColumnNamesFromPostgres = async (credentials, table) => {
+  const client = new Client({
+    user: credentials.user,
+    password: credentials.password,
+    host: credentials.host,
+    database: credentials.database,
+    port: credentials.port,
+  })
+  await client.connect()
+  const { rows } = await client.query({
+    text: `SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = $1 ORDER BY column_name;`,
+    values: [table],
+  })
   await client.end()
 
   return rows
@@ -70,4 +88,20 @@ const getCompiledSQL = async (service, model) => {
   return cdssql
 }
 
-export { getTableNames, getCompiledSQL, extractTableColumnNamesFromSQL, extractViewColumnNames }
+const getEntityNamesFromCds = async (service, model) => {
+  const queries = await getCompiledSQL(service, model)
+  return queries.map((query) => {
+    const [, table, entity] = query.match(/^\s*CREATE (?:(TABLE)|VIEW)\s+"?([^\s(]+)"?/im) || []
+    return { name: entity, isTable: table}
+  })
+    
+}
+
+export {
+  extractColumnNamesFromPostgres,
+  getTableNamesFromPostgres,
+  getCompiledSQL,
+  getEntityNamesFromCds,
+  extractTableColumnNamesFromSQL,
+  extractViewColumnNames,
+}

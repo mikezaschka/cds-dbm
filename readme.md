@@ -27,17 +27,23 @@ Nevertheless it may be suitable to use the <a href="https://github.com/liquibase
 This is an early alpha version not yet released as an npm package and not ready to be used in production environments.
 The rough plan ahead:
 
+**Project setup**
 - [x] inital project setup including TypeScript and liquibase
-- [x] add PostgresSQL adapter (<a href="https://github.com/sapmentors/cds-pg">cds-pg</a>)
+- [ ] add build pipeline (github actions, ts > js)
+- [ ] release as npm package
+
+**General features**
 - [x] add automated deployment model 
 - [x] add support for auto-undeployment (implicit drop)
 - [ ] add support for updeployment files (explicit drop)
 - [ ] add data import of csv files
-- [ ] release as npm package
-- [ ] verify and maybe add support for SQLite
 - [ ] add support for multitenancy
 - [ ] add advanced deployment model including migrations
 - [ ] add more tests
+
+**Database support**
+- [x] add PostgresSQL adapter (<a href="https://github.com/sapmentors/cds-pg">cds-pg</a>)
+- [ ] verify and maybe add support for SQLite
 
 Contributions are welcome. Details on how to contribute will be added soon.
 
@@ -133,7 +139,7 @@ cds-dbm drop --all
 
 #### `diff`
 
-Drops all tables and views in your data model from the database. If the `all` parameter is given, then everything in the whole schema will be dropped, not only the cds specific entities.
+Generates a descriptive text file containing all the differences between the defined cds model and the current status of the database.
 
 **Usage**
 
@@ -143,7 +149,7 @@ cds-dbm diff
 
 **Flags**
 
-- `file` (*string*) - If set, the whole content of the database/schema is being dropped.
+- `file` (*string*) - The file path of the diff file. If not set this will default to `<project-root>/diff.txt`
 
 
 **Examples**

@@ -11,8 +11,11 @@ describe('Adapter factory', () => {
       model: ['srv'],
       credentials: {},
     },
-    deploy: {
-      format: 'yml',
+    migrations: {
+      deploy: {
+        tmpFile: '',
+        undeployFile: '',
+      },
       migrations: {
         path: 'db',
       },
@@ -25,7 +28,7 @@ describe('Adapter factory', () => {
     }
   })
 
-  it('should create an adapter instance for SQLite', async () => {
+  it.skip('should create an adapter instance for SQLite', async () => {
     // Setup SQLite
     cds.env.requires.db = { kind: 'sql' }
 

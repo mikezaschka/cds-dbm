@@ -1,0 +1,11 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "1601329798860-3",
+        "author": "mikezaschka (generated)",
+        "changes": []
+      }
+    }
+  ]
+}

@@ -1,9 +1,16 @@
 import * as cdsg from '@sap/cds'
-import path from 'path'
+import fs from "fs"
 import adapterFactory from '../src/adapter'
 import { configOptions } from '../src/config'
 import cds_deploy from '@sap/cds/lib/db/deploy'
-import { getTableNames, getCompiledSQL, extractTableColumnNamesFromSQL, extractViewColumnNames } from './util/postgreshelper'
+import {
+  getTableNamesFromPostgres,
+  getCompiledSQL,
+  extractTableColumnNamesFromSQL,
+  getEntityNamesFromCds,
+  extractViewColumnNames,
+  extractColumnNamesFromPostgres,
+} from './util/postgreshelper'
 import { BaseAdapter } from '../src/adapter/BaseAdapter'
 
 const cds = cdsg as any
@@ -13,6 +20,9 @@ describe('PostgresAdapter', () => {
     if (cds.services['db']) {
       cds.services['db'].disconnect()
     }
+
+    // avoid timeouts
+    jest.setTimeout(30000)
   })
 
   const options: configOptions = {
@@ -32,37 +42,48 @@ describe('PostgresAdapter', () => {
       schema: {
         default: 'public',
         reference: '__cdsdeploy',
+        clone: '__cdsclone',
       },
-      migrations: {
-        path: 'db/migrations',
+      deploy: {
+        tmpFile: './test/tmp/_deploy.json',
+        undeployFile: './test/app/db/undeploy.json',
       },
-      format: 'yml',
-      tempChangelogFile: path.join(__dirname, 'tmp/_deploy'),
     },
   }
 
   describe(' drop () ', () => {
-    beforeEach(() => {
-      // Setup PostgreSQL
+    let adapter: BaseAdapter
+
+    beforeEach(async () => {
       cds.env.requires.db = Object.assign({ kind: 'postgres' }, options.service)
       cds.env.requires.postgres = options.service
+      adapter = await adapterFactory('db', options)
     })
-    it('should remove all known tables and views from the database', async () => {
-      const adapter = await adapterFactory('db', options)
-
-      // use default mechanism to deploy
+    it('+ dropAll: false + should remove all cds based tables and views from the database', async () => {
+      // use build-in mechanism to deploy
       await cds_deploy(options.service.model[0], {}).to('db')
 
       // drop everything
-      await adapter.drop()
+      await adapter.drop({ dropAll: false })
 
-      const existingTablesInPostgres = await getTableNames(options.service.credentials)
-      const model = await getCompiledSQL('db', options.service.model[0])
+      const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+      const tableAndViewNamesFromCds = await getEntityNamesFromCds('db', options.service.model[0])
 
-      for (let each of model) {
-        const [, table, entity] = each.match(/^\s*CREATE (?:(TABLE)|VIEW)\s+"?([^\s(]+)"?/im) || []
-        expect(existingTablesInPostgres.map((i) => i.table_name)).not.toContain(entity.toLowerCase())
+      for (const entity of tableAndViewNamesFromCds) {
+        expect(existingTablesInPostgres.map((i) => i.table_name)).not.toContain(entity.name.toLowerCase())
       }
+    })
+
+    it('+ dropAll: true + should remove everything from the database', async () => {
+      // use build-in mechanism to deploy
+      await cds_deploy(options.service.model[0], {}).to('db')
+
+      // drop everything
+      await adapter.drop({ dropAll: true })
+
+      const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+
+      expect(existingTablesInPostgres.length).toEqual(0)
     })
   })
   describe(' deploy() ', () => {
@@ -75,62 +96,75 @@ describe('PostgresAdapter', () => {
 
       // clean the stage
       adapter = await adapterFactory('db', options)
-      await adapter.drop()
     })
     it('should create the complete data model in an empty database', async () => {
-      await adapter.deploy()
+      await adapter.drop({ dropAll: true })
+      await adapter.deploy({})
 
-      const existingTablesInPostgres = await getTableNames(options.service.credentials)
-      const model = await getCompiledSQL('db', options.service.model[0])
+      const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+      const tableAndViewNamesFromCds = await getEntityNamesFromCds('db', options.service.model[0])
 
-      for (let each of model) {
-        const [, table, entity] = each.match(/^\s*CREATE (?:(TABLE)|VIEW)\s+"?([^\s(]+)"?/im) || []
-        //console.log(each.split('\n'));
-        expect(existingTablesInPostgres.map((i) => i.table_name)).toContain(entity.toLowerCase())
+      for (const entity of tableAndViewNamesFromCds) {
+        expect(existingTablesInPostgres.map((i) => i.table_name)).toContain(entity.name.toLowerCase())
       }
     })
+
     describe('- handling deltas -', () => {
       beforeEach(async () => {
-        await adapter.deploy()
+        await adapter.drop({ dropAll: true })
+        await adapter.deploy({})
+
         cds.services['db'].disconnect()
       })
       it('should add additional tables and views', async () => {
-        // load a an updated model
+        // load an updated model
         options.service.model = ['./test/app/srv/beershop-service_addTables.cds']
         adapter = await adapterFactory('db', options)
-        await adapter.deploy()
+        await adapter.deploy({})
 
-        // verify if everythig is ok
-        const existingTablesInPostgres = await getTableNames(options.service.credentials)
-        const model = await getCompiledSQL('db', options.service.model[0])
+        const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+        const tableAndViewNamesFromCds = await getEntityNamesFromCds('db', options.service.model[0])
 
-        for (let each of model) {
-          const [, table, entity] = each.match(/^\s*CREATE (?:(TABLE)|VIEW)\s+"?([^\s(]+)"?/im) || []
-          expect(existingTablesInPostgres.map((i) => i.table_name)).toContain(entity.toLowerCase())
+        for (const entity of tableAndViewNamesFromCds) {
+          expect(existingTablesInPostgres.map((i) => i.table_name)).toContain(entity.name.toLowerCase())
         }
       })
-      it('should remove tables and views', async () => {
-        // load a an updated model
+      it('should remove tables with autoUndeploy set to true', async () => {
+        // load an updated model
         options.service.model = ['./test/app/srv/beershop-service_removeTables.cds']
         adapter = await adapterFactory('db', options)
-        await adapter.deploy()
 
-        // verify if everythig is ok
-        const existingTablesInPostgres = await getTableNames(options.service.credentials)
-        const model = await getCompiledSQL('db', options.service.model[0])
+        await adapter.deploy({ autoUndeploy: true })
 
-        for (let each of model) {
-          const [, table, entity] = each.match(/^\s*CREATE (?:(TABLE)|VIEW)\s+"?([^\s(]+)"?/im) || []
-          expect(existingTablesInPostgres.map((i) => i.table_name)).toContain(entity.toLowerCase())
+        const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+        const tableAndViewNamesFromCds = await getEntityNamesFromCds('db', options.service.model[0])
+
+        for (const entity of tableAndViewNamesFromCds) {
+          expect(existingTablesInPostgres.map((i) => i.table_name)).toContain(entity.name.toLowerCase())
         }
+
+        expect(existingTablesInPostgres.map((i) => i.table_name)).not.toContain('csw_beers')
+        expect(existingTablesInPostgres.map((i) => i.table_name)).not.toContain('csw_brewery')
       })
 
-      it.todo('should add cascading views')
-      it.skip('should add columns to tables and views', async () => {
+      it('should not remove tables with autoUndeploy set to false', async () => {
         // load an updated model
-        options.service.model = ['./test/app/srv/beershop-service_addColumnsTables.cds']
+        options.service.model = ['./test/app/srv/beershop-service_removeTables.cds']
         adapter = await adapterFactory('db', options)
-        await adapter.deploy()
+
+        await adapter.deploy({ autoUndeploy: false })
+
+        const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+        expect(existingTablesInPostgres.map((i) => i.table_name)).toContain('csw_beers')
+        expect(existingTablesInPostgres.map((i) => i.table_name)).toContain('csw_brewery')
+      })
+
+      it('should add cascading views', async () => {})
+      it('should add columns to tables and views', async () => {
+        // load an updated model
+        options.service.model = ['./test/app/srv/beershop-service_addColumns.cds']
+        adapter = await adapterFactory('db', options)
+        await adapter.deploy({})
 
         const model = await getCompiledSQL('db', options.service.model[0])
 
@@ -138,7 +172,9 @@ describe('PostgresAdapter', () => {
           const [, table, entity] = each.match(/^\s*CREATE (?:(TABLE)|VIEW)\s+"?([^\s(]+)"?/im) || []
           if (table) {
             let cdsColumns = extractTableColumnNamesFromSQL(each)
-            //let tableColumns = extractTableColumnNames(table)
+            let tableColumns = await extractColumnNamesFromPostgres(options.service.credentials, entity)
+
+            expect(cdsColumns.map((c) => c.toLowerCase()).sort).toEqual(tableColumns.map((c) => c.column_name).sort)
           }
         }
       })
@@ -156,10 +192,21 @@ describe('PostgresAdapter', () => {
 
       // clean the stage
       adapter = await adapterFactory('db', options)
-      await adapter.drop()
+      await adapter.drop({ dropAll: true })
     })
-    it.skip('should create the complete data model in an empty database', async () => {
-      await adapter.diff()
+    it('should create a diff file at the defined path', async () => {
+      
+      // load an updated model
+      options.service.model = ['./test/app/srv/beershop-service_addColumns.cds']
+      adapter = await adapterFactory('db', options)
+      await adapter.deploy({})
+
+      const filePath = "test/tmp/diff.txt";
+      await adapter.diff(filePath)
+
+      expect(fs.existsSync(filePath)).toBeTruthy();
+
+      fs.unlinkSync(filePath);
     })
   })
 })

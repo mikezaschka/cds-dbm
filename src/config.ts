@@ -1,17 +1,20 @@
 interface migrationOptions {
   schema?: {
     default: string
+    clone: string
     reference: string
   }
   database?: {
     default: string
     reference: string
   }
-  migrations: {
+  deploy: {
+    tmpFile: string,
+    undeployFile: string
+  }
+  migrations?: {
     path: string
   }
-  format: string
-  tempChangelogFile: string
 }
 
 interface serviceOptions {
@@ -56,7 +59,7 @@ const config = async (service: string): Promise<configOptions> => {
   await cds.connect()
 
   const serviceOptions = cds.env.requires[service]
-  const migrationOptions = cds.env.deploy[service]
+  const migrationOptions = cds.env.migrations[service]
 
   return {
     migrations: migrationOptions,

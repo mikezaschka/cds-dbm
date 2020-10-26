@@ -5,13 +5,16 @@
   "main": "index.js",
   "scripts": {
     "test": "run-s test:pg:up jest test:pg:down",
-    "jest": "jest --runInBand",
+    "jest": "jest --runInBand --silent",
     "test:pg:up-nobg": "docker-compose -f test/docker/postgres.yml up",
     "test:pg:up": "docker-compose -f test/docker/postgres.yml up -d",
     "test:pg:down": "docker-compose -f test/docker/postgres.ymldown",
     "lint": "prettier -c . && eslint '*.{js,ts,tsx}'",
     "release": "standard-version",
     "watch:ts": "tsc -w"
+  },
+  "bin": {
+    "cds-dbm": "dist/cli.js"
   },
   "repository": {
     "type": "git",
