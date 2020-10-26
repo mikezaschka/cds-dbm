@@ -164,3 +164,7 @@ cds-dbm diff --file db/diff.txt
 ## Versioned database development using migrations 
 
 _Not yet implemented_
+
+## Sponsors
+
+Thank you to **p36 (https://p36.io/)** for sponsoring this project. 
