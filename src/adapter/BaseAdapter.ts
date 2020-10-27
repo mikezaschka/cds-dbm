@@ -13,7 +13,7 @@ interface DeployOptions {
 }
 
 /**
- *
+ * Base class that contains all the shared stuff.
  */
 export abstract class BaseAdapter {
   serviceKey: string
@@ -43,16 +43,22 @@ export abstract class BaseAdapter {
   abstract async _deployCdsToReferenceDatabase(): Promise<void>
 
   /**
+   * Synchronize the clone schema with the default one.
+   *
    * @abstract
    */
   abstract async _synchronizeCloneDatabase(): Promise<void>
 
   /**
+   * Drop the views from the clone, since updating views is hard.
+   *
    * @abstract
    */
   abstract async _dropViewsFromCloneDatabase(): Promise<void>
 
   /**
+   * Return the specific options for liquibase.
+   *
    * @abstract
    */
   abstract liquibaseOptionsFor(cmd: string): liquibaseOptions
@@ -73,6 +79,9 @@ export abstract class BaseAdapter {
     }
   }
 
+  /**
+   * TODO: Implement
+   */
   public async load() {
     // await _load_from_js(db, model)
     // await _init_from_csv(db, model)
@@ -110,6 +119,9 @@ export abstract class BaseAdapter {
     this.logger.log(`[cds-dbm] - diff file generated at ${liquibaseOptions.outputFile}`)
   }
 
+  /**
+   * Initialize the cds model (only once)
+   */
   private async initCds() {
     this.cdsModel = await cds.load(this.options.service.model)
     this.cdsSQL = (cds.compile.to.sql(this.cdsModel) as unknown) as string[]
@@ -117,8 +129,9 @@ export abstract class BaseAdapter {
   }
 
   /**
-   *
-   * We use the clone and reference schema to identify the delta, because we need to initially drop
+   * Identifies the changes between the cds definition and the database, generates a delta and deploys
+   * this to the database.
+   * We use a clone and reference schema to identify the delta, because we need to initially drop
    * all the views and we do not want to do this with a potential production database.
    *
    */
@@ -166,7 +179,7 @@ export abstract class BaseAdapter {
     )
 
     // Process the changelog
-    if (autoUndeploy) {
+    if (!autoUndeploy) {
       diffChangeLog.removeDropTableStatements()
     }
     diffChangeLog.reorderChangelog()

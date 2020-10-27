@@ -1,5 +1,5 @@
 import * as cdsg from '@sap/cds'
-import fs from "fs"
+import fs from 'fs'
 import adapterFactory from '../src/adapter'
 import { configOptions } from '../src/config'
 import cds_deploy from '@sap/cds/lib/db/deploy'
@@ -129,6 +129,18 @@ describe('PostgresAdapter', () => {
           expect(existingTablesInPostgres.map((i) => i.table_name)).toContain(entity.name.toLowerCase())
         }
       })
+      
+      it('should not remove tables with autoUndeploy set to false', async () => {
+        // load an updated model
+        options.service.model = ['./test/app/srv/beershop-service_removeTables.cds']
+        adapter = await adapterFactory('db', options)
+
+        await adapter.deploy({ autoUndeploy: false })
+
+        const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+        expect(existingTablesInPostgres.map((i) => i.table_name)).toContain('csw_beers')
+        expect(existingTablesInPostgres.map((i) => i.table_name)).toContain('csw_brewery')
+      })
       it('should remove tables with autoUndeploy set to true', async () => {
         // load an updated model
         options.service.model = ['./test/app/srv/beershop-service_removeTables.cds']
@@ -145,18 +157,6 @@ describe('PostgresAdapter', () => {
 
         expect(existingTablesInPostgres.map((i) => i.table_name)).not.toContain('csw_beers')
         expect(existingTablesInPostgres.map((i) => i.table_name)).not.toContain('csw_brewery')
-      })
-
-      it('should not remove tables with autoUndeploy set to false', async () => {
-        // load an updated model
-        options.service.model = ['./test/app/srv/beershop-service_removeTables.cds']
-        adapter = await adapterFactory('db', options)
-
-        await adapter.deploy({ autoUndeploy: false })
-
-        const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
-        expect(existingTablesInPostgres.map((i) => i.table_name)).toContain('csw_beers')
-        expect(existingTablesInPostgres.map((i) => i.table_name)).toContain('csw_brewery')
       })
 
       it('should add cascading views', async () => {})
@@ -195,18 +195,17 @@ describe('PostgresAdapter', () => {
       await adapter.drop({ dropAll: true })
     })
     it('should create a diff file at the defined path', async () => {
-      
       // load an updated model
       options.service.model = ['./test/app/srv/beershop-service_addColumns.cds']
       adapter = await adapterFactory('db', options)
       await adapter.deploy({})
 
-      const filePath = "test/tmp/diff.txt";
+      const filePath = 'test/tmp/diff.txt'
       await adapter.diff(filePath)
 
-      expect(fs.existsSync(filePath)).toBeTruthy();
+      expect(fs.existsSync(filePath)).toBeTruthy()
 
-      fs.unlinkSync(filePath);
+      fs.unlinkSync(filePath)
     })
   })
 })

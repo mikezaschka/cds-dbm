@@ -44,7 +44,7 @@ export class PostgresAdapter extends BaseAdapter {
   }
 
   /**
-   * Returns the liquidbase options for the given command.
+   * Returns the liquibase options for the given command.
    *
    * @override
    * @param {string} cmd
