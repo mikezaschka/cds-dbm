@@ -14,7 +14,7 @@ exports.builder = {
     alias: 'a',
     type: boolean
   },
-  "dry-run": {
+  "dry": {
     alias: 'd',
     type: boolean
   }
@@ -23,6 +23,6 @@ exports.handler = async (argv: any) => {
   for (const service of argv.service) {
     const options = await config(service)
     const adapter = await adapterFactory(service, options)
-    await adapter!.deploy({autoUndeploy: argv.autoUndeploy, dryRun: argv.dryRun})
+    await adapter!.deploy({autoUndeploy: argv.autoUndeploy, dryRun: argv.dry})
   }
 }
