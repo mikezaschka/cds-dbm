@@ -35,7 +35,7 @@ The rough plan ahead:
 **General features**
 - [x] add automated deployment model 
 - [x] add support for auto-undeployment (implicit drop)
-- [ ] add support for updeployment files (explicit drop)
+- [x] add support for updeployment files (explicit drop)
 - [ ] add data import of csv files
 - [ ] add support for multitenancy
 - [ ] add advanced deployment model including migrations
@@ -90,8 +90,37 @@ _cds-dbm_ requires some additional configuration added to your package.json:
   }
 ```
 
+### Dropping tables/views
+
+cds-dbm follows a safe approach and does not drop any database tables during deployment. Thus, old tables will still be around even if they are not part of your data model anymore.
+
+You can either remove them manually or rely on _cds-dbm_ to handle this for you.
+
+**Undeployment file**
+
+An undeployment file makes it possible to specifically list views and tables that should be dropped from the database schema during the deployment. 
+
+The undeployment file's path needs to be specified in the `package.json` configuration (`cds.migrations.deploy.undeployFile`)
+
+```json 
+# An example undeploy.json:
+
+{
+    "views": [],
+    "tables": [
+        "csw_beers",
+        "csw_anotherTable"
+    ]
+}
+```
+
+**auto-undeployment option**
+
+While an `undeploy.json` file gives you fine grained control, it is also possible to automatically remove tables/views from the database schema. When using the `auto-undeploy` flag during deployment, _cds-dbm_ will take the cds model as the reference and remove all other existing tables/views.
 
 ### Commands
+
+The following commands exists for working the _cds-dbm_ in the automated delta deployment mode:
 
 #### `deploy`
 
@@ -107,14 +136,14 @@ cds-dbm deploy
 
 - `service` (*array*) - The service (defaults to `db`)
 - `auto-undeploy` (*boolean*) - **WARNING**: Drops all tables not known to your data model from the database. This should **only** be used if your cds includes all tables/views in your db (schema). Otherwise it is highly recommended to use an undeployment file.
-- `dry-run` (*boolean*) - Does not apply the SQL to the database but logs it to stdout
+- `dry` (*boolean*) - Does not apply the SQL to the database but logs it to stdout
 
 **Examples**
 
 ```bash
 cds-dbm deploy
 cds-dbm deploy --auto-undeploy
-cds-dbm deploy --auto-undeploy --dry-run
+cds-dbm deploy --auto-undeploy --dry
 ```
 
 #### `drop`

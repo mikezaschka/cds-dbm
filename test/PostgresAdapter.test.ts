@@ -46,7 +46,7 @@ describe('PostgresAdapter', () => {
       },
       deploy: {
         tmpFile: './test/tmp/_deploy.json',
-        undeployFile: './test/app/db/undeploy.json',
+        undeployFile: '',
       },
     },
   }
@@ -139,6 +139,22 @@ describe('PostgresAdapter', () => {
 
         const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
         expect(existingTablesInPostgres.map((i) => i.table_name)).toContain('csw_beers')
+        expect(existingTablesInPostgres.map((i) => i.table_name)).toContain('csw_brewery')
+      })
+
+      it.only('should remove tables listed in a given undeploy.json file', async () => {
+        options.service.model = ['./test/app/srv/beershop-service_removeTables.cds']
+        options.migrations.deploy.undeployFile = "./test/app/db/undeploy.json"
+        adapter = await adapterFactory('db', options)
+
+        await adapter.deploy({ autoUndeploy: false })
+
+        const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+
+        // named in undeployFile
+        expect(existingTablesInPostgres.map((i) => i.table_name)).not.toContain('csw_beers')
+
+        // not named in undeployFile
         expect(existingTablesInPostgres.map((i) => i.table_name)).toContain('csw_brewery')
       })
       it('should remove tables with autoUndeploy set to true', async () => {

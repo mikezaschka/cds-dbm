@@ -71,4 +71,69 @@ export class ChangeLog {
     // Remove empty items
     this.data.databaseChangeLog = this.data.databaseChangeLog.filter((n) => n)
   }
+
+  /**
+   * Create drop changesets for all tables and views that are specified
+   * in the given undeploy file.
+   *
+   * @param {string} undeployFilePath
+   */
+  public removeAutoUndeployEntities(undeployFilePath) {
+    if (!fs.existsSync(undeployFilePath)) {
+      return
+    }
+
+    const fileContent: any = fs.readFileSync(undeployFilePath)
+    const undeployList = JSON.parse(fileContent)
+    const timestamp = new Date().getTime()
+    let counter = 1
+
+    for (const view of undeployList.views) {
+      this.data.databaseChangeLog.push({
+        changeSet: {
+          id: `${timestamp}-${counter++}`,
+          author: 'cds-dbm auto-undeploy (generated)',
+          preConditions: [
+            {
+              onFail: 'MARK_RAN',
+              viewExists: {
+                tableName: view,
+              },
+            },
+          ],
+          changes: [
+            {
+              dropView: {
+                tableName: view,
+              },
+            },
+          ],
+        },
+      })
+    }
+
+    for (const table of undeployList.tables) {
+      this.data.databaseChangeLog.push({
+        changeSet: {
+          id: `${timestamp}-${counter++}`,
+          author: 'cds-dbm auto-undeploy (generated)',
+          preConditions: [
+            {
+              onFail: 'MARK_RAN',
+              tableExists: {
+                tableName: table,
+              },
+            },
+          ],
+          changes: [
+            {
+              dropTable: {
+                tableName: table,
+              },
+            },
+          ],
+        },
+      })
+    }
+  }
 }

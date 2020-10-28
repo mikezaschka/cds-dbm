@@ -182,6 +182,7 @@ export abstract class BaseAdapter {
     if (!autoUndeploy) {
       diffChangeLog.removeDropTableStatements()
     }
+    diffChangeLog.removeAutoUndeployEntities(this.options.migrations.deploy.undeployFile)
     diffChangeLog.reorderChangelog()
     diffChangeLog.toFile(temporaryChangelogFile)
 

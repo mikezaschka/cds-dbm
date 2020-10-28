@@ -1,0 +1,7 @@
+{
+    "views": [],
+    "tables": [
+        "csw_beers",
+        "csw_notExistingTable"
+    ]
+}
