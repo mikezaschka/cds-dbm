@@ -108,6 +108,10 @@ export abstract class BaseAdapter {
     // Revisit: Possible liquibase bug to not support changelogs by absolute path?
     //liquibaseOptions.changeLogFile = `${__dirname}../../template/emptyChangelog.json`
     const tmpChangelogPath = 'tmp/emptyChangelog.json'
+    const dirname = path.dirname(tmpChangelogPath);
+    if (!fs.existsSync(dirname)) {
+      fs.mkdirSync(dirname);
+    }
     fs.copyFileSync(`${__dirname}/../../template/emptyChangelog.json`, tmpChangelogPath)
     liquibaseOptions.changeLogFile = tmpChangelogPath
     await liquibase(liquibaseOptions).run('update')
