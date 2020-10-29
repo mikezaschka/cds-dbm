@@ -29,8 +29,8 @@ The rough plan ahead:
 
 **Project setup**
 - [x] inital project setup including TypeScript and liquibase
-- [ ] add build pipeline (github actions, ts > js)
-- [ ] release as npm package
+- [x] add build pipeline (github actions, ts > js)
+- [x] release as npm package
 
 **General features**
 - [x] add automated deployment model 
@@ -54,8 +54,6 @@ Since the project uses liquibase internally, a Java Runtime Environment (JRE) in
 ## Usage in your CAP project
 
 Simply add this package to your [CAP](https://cap.cloud.sap/docs/) project by running:
-
-**THIS WILL WORK ONCE PUBLISHED TO NPM**
 
 ```bash
 npm install cds-dbm
@@ -121,6 +119,12 @@ While an `undeploy.json` file gives you fine grained control, it is also possibl
 ### Commands
 
 The following commands exists for working the _cds-dbm_ in the automated delta deployment mode:
+
+**Currently tall tasks must be called with npx**
+
+```bash
+npx cds-dbm <task>
+```
 
 #### `deploy`
 
