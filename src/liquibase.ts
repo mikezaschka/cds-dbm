@@ -61,8 +61,8 @@ class Liquibase {
     let child
     let promise = new Promise((resolve, reject) => {
       child = childProcess.exec(command, options, (error: any, stdout: any, stderr: any) => {
-        console.log('\n', stdout)
-        console.error('\n', stderr)
+        //console.log('\n', stdout)
+        //console.error('\n', stderr)
 
         if (error) {
           error.stderr = stderr

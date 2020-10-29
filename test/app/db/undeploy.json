@@ -1,5 +1,7 @@
 {
-    "views": [],
+    "views": [
+        "beershopservice_beers"
+    ],
     "tables": [
         "csw_beers",
         "csw_notExistingTable"

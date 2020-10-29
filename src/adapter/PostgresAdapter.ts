@@ -22,25 +22,21 @@ export class PostgresAdapter extends BaseAdapter {
       port: credentials.port,
     })
 
-    try {
-      await client.connect()
-      await client.query(`DROP SCHEMA IF EXISTS ${cloneSchema} CASCADE`)
-      await client.query(`CREATE SCHEMA ${cloneSchema}`)
-      await client.query(`SET search_path TO ${cloneSchema};`)
+    await client.connect()
+    await client.query(`DROP SCHEMA IF EXISTS ${cloneSchema} CASCADE`)
+    await client.query(`CREATE SCHEMA ${cloneSchema}`)
+    await client.query(`SET search_path TO ${cloneSchema};`)
 
-      const serviceInstance = cds.services[this.serviceKey] as PostgresDatabase
-      for (const query of this.cdsSQL) {
-        await client.query(serviceInstance.cdssql2pgsql(query))
-        const [, table, entity] = query.match(/^\s*CREATE (?:(TABLE)|VIEW)\s+"?([^\s(]+)"?/im) || []
-        if (!table) {
-          await client.query(`DROP VIEW IF EXISTS ${entity} CASCADE`)
-        }
+    const serviceInstance = cds.services[this.serviceKey] as PostgresDatabase
+    for (const query of this.cdsSQL) {
+      await client.query(serviceInstance.cdssql2pgsql(query))
+      const [, table, entity] = query.match(/^\s*CREATE (?:(TABLE)|VIEW)\s+"?([^\s(]+)"?/im) || []
+      if (!table) {
+        await client.query(`DROP VIEW IF EXISTS ${entity} CASCADE`)
       }
-    } catch (error) {
-      console.error(error)
-    } finally {
-      await client.end()
     }
+
+    return client.end()
   }
 
   /**
@@ -112,6 +108,8 @@ export class PostgresAdapter extends BaseAdapter {
     await liquibase(liquibaseOptions).run('update')
 
     fs.unlinkSync(temporaryChangelogFile)
+
+    return Promise.resolve()
   }
 
   /**
@@ -137,6 +135,6 @@ export class PostgresAdapter extends BaseAdapter {
       await client.query(serviceInstance.cdssql2pgsql(query))
     }
 
-    await client.end()
+    return client.end()
   }
 }

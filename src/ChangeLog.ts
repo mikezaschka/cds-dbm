@@ -97,14 +97,14 @@ export class ChangeLog {
             {
               onFail: 'MARK_RAN',
               viewExists: {
-                tableName: view,
+                viewName: view,
               },
             },
           ],
           changes: [
             {
               dropView: {
-                tableName: view,
+                viewName: view,
               },
             },
           ],

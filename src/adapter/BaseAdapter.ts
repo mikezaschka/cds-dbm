@@ -78,6 +78,7 @@ export abstract class BaseAdapter {
     } else {
       await this._dropCdsEntitiesFromDatabase(this.serviceKey, false)
     }
+    return Promise.resolve()
   }
 
   /**
@@ -127,6 +128,7 @@ export abstract class BaseAdapter {
     this.cdsModel = await cds.load(this.options.service.model)
     this.cdsSQL = (cds.compile.to.sql(this.cdsModel) as unknown) as string[]
     this.cdsSQL.sort(sortByCasadingViews)
+    return Promise.resolve()
   }
 
   /**

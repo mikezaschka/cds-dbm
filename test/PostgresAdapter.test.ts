@@ -78,11 +78,13 @@ describe('PostgresAdapter', () => {
       // use build-in mechanism to deploy
       await cds_deploy(options.service.model[0], {}).to('db')
 
+      let existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+      expect(existingTablesInPostgres.length).not.toEqual(0)
+
       // drop everything
       await adapter.drop({ dropAll: true })
 
-      const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
-
+      existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
       expect(existingTablesInPostgres.length).toEqual(0)
     })
   })
@@ -111,8 +113,13 @@ describe('PostgresAdapter', () => {
 
     describe('- handling deltas -', () => {
       beforeEach(async () => {
+        options.migrations.deploy.undeployFile = ''
+        options.service.model = ['./test/app/srv/beershop-service.cds']
+
         await adapter.drop({ dropAll: true })
-        await adapter.deploy({})
+        //await adapter.deploy({})
+        // use build-in mechanism to deploy
+        await cds_deploy(options.service.model[0], {}).to('db')
 
         cds.services['db'].disconnect()
       })
@@ -129,7 +136,7 @@ describe('PostgresAdapter', () => {
           expect(existingTablesInPostgres.map((i) => i.table_name)).toContain(entity.name.toLowerCase())
         }
       })
-      
+
       it('should not remove tables with autoUndeploy set to false', async () => {
         // load an updated model
         options.service.model = ['./test/app/srv/beershop-service_removeTables.cds']
@@ -142,12 +149,14 @@ describe('PostgresAdapter', () => {
         expect(existingTablesInPostgres.map((i) => i.table_name)).toContain('csw_brewery')
       })
 
-      it.only('should remove tables listed in a given undeploy.json file', async () => {
+      it('should remove tables listed in a given undeploy.json file', async () => {
         options.service.model = ['./test/app/srv/beershop-service_removeTables.cds']
-        options.migrations.deploy.undeployFile = "./test/app/db/undeploy.json"
+        options.migrations.deploy.undeployFile = './test/app/db/undeploy.json'
         adapter = await adapterFactory('db', options)
 
-        await adapter.deploy({ autoUndeploy: false })
+        console.log(await getTableNamesFromPostgres(options.service.credentials))
+
+        await adapter.deploy({})
 
         const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
 
