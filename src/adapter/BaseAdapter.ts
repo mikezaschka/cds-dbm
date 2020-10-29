@@ -1,6 +1,7 @@
 import { ConstructedQuery } from '@sap/cds/apis/ql'
 import liquibase from '../liquibase'
 import fs from 'fs'
+import path from 'path'
 import { Logger } from 'winston'
 import { configOptions, liquibaseOptions } from './../config'
 import { ChangeLog } from '../ChangeLog'
@@ -144,7 +145,11 @@ export abstract class BaseAdapter {
     if (fs.existsSync(temporaryChangelogFile)) {
       fs.unlinkSync(temporaryChangelogFile)
     }
-
+    const dirname = path.dirname(temporaryChangelogFile);
+    if (!fs.existsSync(dirname)) {
+      fs.mkdirSync(dirname);
+    }
+    
     // Setup the clone
     await this._synchronizeCloneDatabase()
 
