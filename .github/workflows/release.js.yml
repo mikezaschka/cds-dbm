@@ -28,7 +28,7 @@ jobs:
       # push to self aka main from within gh action with "release-state"
       # doesn't trigger this workflow again
       # b/c of missing personal access token here
-      - run: git push --follow-tags origin main
+      # - run: git push --follow-tags origin main
       # finally publish the npm package
       - run: npm publish
         env:
