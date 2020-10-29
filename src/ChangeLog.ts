@@ -78,7 +78,7 @@ export class ChangeLog {
    *
    * @param {string} undeployFilePath
    */
-  public removeAutoUndeployEntities(undeployFilePath) {
+  public addDropStatementsForUndeployEntities(undeployFilePath) {
     if (!fs.existsSync(undeployFilePath)) {
       return
     }
