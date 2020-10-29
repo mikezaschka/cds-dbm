@@ -2,7 +2,7 @@ import * as cdsg from '@sap/cds'
 import fs from 'fs'
 import adapterFactory from '../src/adapter'
 import { configOptions } from '../src/config'
-import cds_deploy from '@sap/cds/lib/db/deploy'
+import cds_deploy from '@sap/cds/lib/srv/db/deploy'
 import {
   getTableNamesFromPostgres,
   getCompiledSQL,
