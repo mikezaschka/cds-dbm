@@ -10,19 +10,24 @@ exports.builder = {
     type: array,
     default: ['db'],
   },
-  "auto-undeploy": {
+  'auto-undeploy': {
     alias: 'a',
-    type: boolean
+    type: boolean,
   },
-  "dry": {
+  dry: {
     alias: 'd',
-    type: boolean
-  }
+    type: boolean,
+  },
+  'load-via': {
+    alias: 'l',
+    type: String,
+  },
 }
 exports.handler = async (argv: any) => {
   for (const service of argv.service) {
     const options = await config(service)
     const adapter = await adapterFactory(service, options)
-    await adapter!.deploy({autoUndeploy: argv.autoUndeploy, dryRun: argv.dry})
+    const isFull = argv.full || !argv.delta
+    await adapter!.deploy({ autoUndeploy: argv.autoUndeploy, dryRun: argv.dry, loadMode: argv.loadVia })
   }
 }

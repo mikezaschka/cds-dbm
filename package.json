@@ -65,7 +65,8 @@
     "ts-jest": "^26.4.3",
     "typescript": "^4.0.5",
     "underscore": "^1.11.0",
-    "underscore.string": "^3.3.5"
+    "underscore.string": "^3.3.5",
+    "uuidv4": "^6.2.4"
   },
   "husky": {
     "hooks": {

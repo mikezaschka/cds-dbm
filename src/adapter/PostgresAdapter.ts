@@ -8,6 +8,27 @@ import { liquibaseOptions } from './../config'
 import { PostgresDatabase } from './../types/PostgresDatabase'
 
 export class PostgresAdapter extends BaseAdapter {
+
+  /**
+   * 
+   * @override
+   * @param table
+   */
+  async _truncateTable(table: any): Promise<void> {
+    const credentials = this.options.service.credentials
+    const cloneSchema = this.options.migrations.schema!.default
+    const client = new Client({
+      user: credentials.user,
+      password: credentials.password,
+      host: credentials.host,
+      database: credentials.database,
+      port: credentials.port,
+    })
+
+    await client.connect()
+    await client.query(`TRUNCATE ${table} RESTART IDENTITY`)
+    return client.end()
+  }
   /**
    *
    */
