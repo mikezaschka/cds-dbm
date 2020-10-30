@@ -10,20 +10,17 @@ exports.builder = {
     type: array,
     default: ['db'],
   },
-  delta: {
-    alias: 'd',
-    type: array,
-  },
-  full: {
-    alias: 'd',
-    type: array,
-  },
+  via: {
+    alias: 'v',
+    type: String,
+    demandOption: true
+  }
 }
 exports.handler = async (argv: any) => {
   for (const service of argv.service) {
     const options = await config(service)
     const adapter = await adapterFactory(service, options)
-    const isFull = argv.full || !argv.delta
+    const isFull = argv.loadVia.toLowerCase() === "full" 
     await adapter!.load(isFull)
   }
 }
