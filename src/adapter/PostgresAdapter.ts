@@ -8,9 +8,8 @@ import { liquibaseOptions } from './../config'
 import { PostgresDatabase } from './../types/PostgresDatabase'
 
 export class PostgresAdapter extends BaseAdapter {
-
   /**
-   * 
+   *
    * @override
    * @param table
    */

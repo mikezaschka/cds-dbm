@@ -92,9 +92,8 @@ const getEntityNamesFromCds = async (service, model) => {
   const queries = await getCompiledSQL(service, model)
   return queries.map((query) => {
     const [, table, entity] = query.match(/^\s*CREATE (?:(TABLE)|VIEW)\s+"?([^\s(]+)"?/im) || []
-    return { name: entity, isTable: table}
+    return { name: entity, isTable: table }
   })
-    
 }
 
 export {

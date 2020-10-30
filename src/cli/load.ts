@@ -13,14 +13,14 @@ exports.builder = {
   via: {
     alias: 'v',
     type: String,
-    demandOption: true
-  }
+    demandOption: true,
+  },
 }
 exports.handler = async (argv: any) => {
   for (const service of argv.service) {
     const options = await config(service)
     const adapter = await adapterFactory(service, options)
-    const isFull = argv.loadVia.toLowerCase() === "full" 
+    const isFull = argv.loadVia.toLowerCase() === 'full'
     await adapter!.load(isFull)
   }
 }

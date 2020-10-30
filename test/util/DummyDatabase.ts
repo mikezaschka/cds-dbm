@@ -1,4 +1,1 @@
-
-export class DummyDatabase extends cds.DatabaseService {
-
-}
+export class DummyDatabase extends cds.DatabaseService {}

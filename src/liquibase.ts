@@ -28,20 +28,20 @@ class Liquibase {
 
   /**
    * Internal getter that returns a node child process compatible command string.
-   * 
+   *
    * @returns {string}
    * @private
    */
   get _command() {
     let cmd = `${this.params.liquibase}`
 
-    Object.keys(this.params).forEach(key => {
-			if (key === 'liquibase') {
-				return;
-			}
-			const value = this.params[key as keyof liquibaseOptions];
-			cmd = `${cmd} --${key}=${value}`;
-		});
+    Object.keys(this.params).forEach((key) => {
+      if (key === 'liquibase') {
+        return
+      }
+      const value = this.params[key as keyof liquibaseOptions]
+      cmd = `${cmd} --${key}=${value}`
+    })
 
     return cmd
   }
@@ -49,7 +49,7 @@ class Liquibase {
   /**
    *
    * Internal method for executing a child process.
-   * 
+   *
    * @param {string} command Liquibase command
    * @param {*} options any options
    * @private

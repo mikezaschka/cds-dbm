@@ -9,7 +9,7 @@ interface migrationOptions {
     reference: string
   }
   deploy: {
-    tmpFile: string,
+    tmpFile: string
     undeployFile: string
   }
   migrations?: {

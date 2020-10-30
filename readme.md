@@ -1,6 +1,6 @@
-# cds-dbm 
+# cds-dbm
 
-_cds-dbm_ is a node package that adds **automated delta deployment** and (as a planned, but not yet integrated feature) **full database migration support** to the Node.js Service SDK (<a href="https://www.npmjs.com/package/@sap/cds">@sap/cds</a>) of the <a href="https://cap.cloud.sap/docs/about/">**SAP Cloud Application Programming Model**</a>. 
+_cds-dbm_ is a node package that adds **automated delta deployment** and (as a planned, but not yet integrated feature) **full database migration support** to the Node.js Service SDK (<a href="https://www.npmjs.com/package/@sap/cds">@sap/cds</a>) of the <a href="https://cap.cloud.sap/docs/about/">**SAP Cloud Application Programming Model**</a>.
 
 The library offers two ways of handling database deployments:<br>
 You can either use automated delta deployments of the current cds data model that are in line with the default development workflow in cap projects. For more complex applications and scenarios, there will also be integrated support of a full fledged database migration concept.
@@ -15,7 +15,7 @@ Support for other databases is planned whenever a corresponding cds adapter libr
 <details><summary>Why does <i>cds-dbm</i> (currently) not support SAP HANA?</summary>
 <p>
 
-As SAP HANA is a first class citizen in CAP, SAP offers its own deployment solution (<a href="https://www.npmjs.com/package/@sap/hdi-deploy">@sap/hdi-deploy</a>). With CAP it is possible to directly compile a data model into SAP HANA fragments (.hdbtable, etc.), which can then be deployed by the hdi-deploy module taking care  of all the important stuff (delta handling, hdi-management on XSA or SAP Cloud Platform, etc.).
+As SAP HANA is a first class citizen in CAP, SAP offers its own deployment solution (<a href="https://www.npmjs.com/package/@sap/hdi-deploy">@sap/hdi-deploy</a>). With CAP it is possible to directly compile a data model into SAP HANA fragments (.hdbtable, etc.), which can then be deployed by the hdi-deploy module taking care of all the important stuff (delta handling, hdi-management on XSA or SAP Cloud Platform, etc.).
 <br>
 Nevertheless it may be suitable to use the <a href="https://github.com/liquibase/liquibase-hanadb">liquibase-hanadb</a> adapter to add an alternative deployment solution. If so, support might be added in the future.
 
@@ -28,22 +28,26 @@ This is an alpha version not ready to be used in production environments.
 The rough plan ahead:
 
 **Project setup**
+
 - [x] inital project setup including TypeScript and liquibase
 - [x] release as npm package
 - [ ] fully leverage github build pipeline (github actions, ts > js)
 
 **Basic features**
-- [x] add automated deployment model 
+
+- [x] add automated deployment model
 - [x] add support for auto-undeployment (implicit drop)
 - [x] add support for updeployment files (explicit drop)
 - [x] add data import of csv files
 - [ ] add tests for more complex scenarios
 
 **Advanced features**
+
 - [ ] add support for multitenancy
 - [ ] add advanced deployment model including migrations
 
 **Database support**
+
 - [x] add PostgresSQL adapter (<a href="https://github.com/sapmentors/cds-pg">cds-pg</a>)
 - [ ] verify and maybe add support for SQLite
 
@@ -69,9 +73,9 @@ npm install cds-dbm
 
 In the meantime some notes on the delta processing:
 
-1. clone current db schema `cds.migrations.db.schema.default` into `cds.migrations.db.schema.clone` 
+1. clone current db schema `cds.migrations.db.schema.default` into `cds.migrations.db.schema.clone`
 2. drop all cds based views from clone schema because updates on views do not work in the way liquibase is handling this via `CREATE OR REPLACE VIEW`
-(https://liquibase.jira.com/browse/CORE-2377)
+   (https://liquibase.jira.com/browse/CORE-2377)
 3. deploy the full cds model to the reference schema `cds.migrations.db.schema.reference`
 4. let liquibase create a diff between the clone and reference schema (including the recreation of the dropped views)
 5. do some adjustments on the changelog (handle undeployment stuff, fix order of things)
@@ -94,7 +98,7 @@ _cds-dbm_ requires some additional configuration added to your package.json:
         },
         "deploy": {
           "tmpFile": "tmp/_autodeploy.json",
-          "undeployFile": "db/undeploy.json"  
+          "undeployFile": "db/undeploy.json"
         }
       }
     }
@@ -109,11 +113,11 @@ You can either remove them manually or rely on _cds-dbm_ to handle this for you.
 
 **Undeployment file**
 
-An undeployment file makes it possible to specifically list views and tables that should be dropped from the database schema during the deployment. 
+An undeployment file makes it possible to specifically list views and tables that should be dropped from the database schema during the deployment.
 
 The undeployment file's path needs to be specified in the `package.json` configuration (`cds.migrations.deploy.undeployFile`)
 
-```json 
+```json
 # An example undeploy.json:
 
 {
@@ -151,10 +155,10 @@ cds-dbm deploy
 
 **Flags**
 
-- `service` (*array*) - The service (defaults to `db`)
-- `auto-undeploy` (*boolean*) - **WARNING**: Drops all tables not known to your data model from the database. This should **only** be used if your cds includes all tables/views in your db (schema). Otherwise it is highly recommended to use an undeployment file.
-- `load-via` (*string*) - Can be either `full` (truncate and insert) or `delta` (check for existing records, then update or insert)
-- `dry` (*boolean*) - Does not apply the SQL to the database but logs it to stdout
+- `service` (_array_) - The service (defaults to `db`)
+- `auto-undeploy` (_boolean_) - **WARNING**: Drops all tables not known to your data model from the database. This should **only** be used if your cds includes all tables/views in your db (schema). Otherwise it is highly recommended to use an undeployment file.
+- `load-via` (_string_) - Can be either `full` (truncate and insert) or `delta` (check for existing records, then update or insert)
+- `dry` (_boolean_) - Does not apply the SQL to the database but logs it to stdout
 
 **Examples**
 
@@ -165,10 +169,9 @@ cds-dbm deploy --auto-undeploy
 cds-dbm deploy --auto-undeploy --dry
 ```
 
-
 #### `load`
 
-Loads data from CSV files into the database. 
+Loads data from CSV files into the database.
 The following conventions apply (according to the default _@sap/cds_ conventions at https://cap.cloud.sap/docs/guides/databases):
 
 - The files must be located in folders db/csv, db/data/, or db/src/csv.
@@ -189,8 +192,7 @@ cds-dbm load --via delta
 
 **Flags**
 
-- `via` (*string*) - Can be either `full` (truncate and insert) or `delta` (check for existing records, then update or insert)
-
+- `via` (_string_) - Can be either `full` (truncate and insert) or `delta` (check for existing records, then update or insert)
 
 #### `drop`
 
@@ -204,8 +206,7 @@ cds-dbm drop
 
 **Flags**
 
-- `all` (*boolean*) - If set, the whole content of the database/schema is being dropped.
-
+- `all` (_boolean_) - If set, the whole content of the database/schema is being dropped.
 
 **Examples**
 
@@ -226,8 +227,7 @@ cds-dbm diff
 
 **Flags**
 
-- `file` (*string*) - The file path of the diff file. If not set this will default to `<project-root>/diff.txt`
-
+- `file` (_string_) - The file path of the diff file. If not set this will default to `<project-root>/diff.txt`
 
 **Examples**
 
@@ -238,10 +238,10 @@ cds-dbm diff --file db/diff.txt
 
 ---
 
-## Versioned database development using migrations 
+## Versioned database development using migrations
 
 _Not yet implemented_
 
 ## Sponsors
 
-Thank you to **p36 (https://p36.io/)** for sponsoring this project. 
+Thank you to **p36 (https://p36.io/)** for sponsoring this project.

@@ -5,6 +5,9 @@ import { liquibaseOptions } from './../config'
 import { sortByCasadingViews } from '../util'
 
 export class SqliteAdapter extends BaseAdapter {
+  _truncateTable(table: any): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
   _deployCdsToReferenceDatabase(): Promise<void> {
     throw new Error('Method not implemented.')
   }
