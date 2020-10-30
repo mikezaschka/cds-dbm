@@ -1,5 +1,6 @@
 import * as cdsg from '@sap/cds'
 import fs from 'fs'
+import { uuid } from 'uuidv4'
 import adapterFactory from '../src/adapter'
 import { configOptions } from '../src/config'
 import cds_deploy from '@sap/cds/lib/srv/db/deploy'
@@ -111,13 +112,21 @@ describe('PostgresAdapter', () => {
       }
     })
 
+    it('should load data when the loadMode is set to full ', async () => {
+      await adapter.drop({ dropAll: true })
+      await adapter.deploy({ loadMode: 'full' })
+
+      const countResponse = await SELECT.from('csw.Beers').columns('COUNT(*) as myCount')
+      expect(parseInt(countResponse[0].myCount)).toEqual(2)
+    })
+
     describe('- handling deltas -', () => {
       beforeEach(async () => {
         options.migrations.deploy.undeployFile = ''
         options.service.model = ['./test/app/srv/beershop-service.cds']
 
         await adapter.drop({ dropAll: true })
-        //await adapter.deploy({})
+        // await adapter.deploy({})
         // use build-in mechanism to deploy
         await cds_deploy(options.service.model[0], {}).to('db')
 
@@ -204,6 +213,19 @@ describe('PostgresAdapter', () => {
         }
       })
       it.todo('should remove columns from tables and views')
+
+      it('should load data when the loadMode is set to delta ', async () => {
+        adapter = await adapterFactory('db', options)
+
+        // insert an entity
+        await INSERT.into('csw.Beers').entries([{ ID: uuid(), name: 'Test' }])
+
+        // should load two rows from the db
+        await adapter.deploy({ loadMode: 'delta' })
+
+        const countResponse = await SELECT.from('csw.Beers').columns('COUNT(*) as myCount')
+        expect(parseInt(countResponse[0].myCount)).toEqual(3)
+      })
     })
   })
 
@@ -231,6 +253,71 @@ describe('PostgresAdapter', () => {
       expect(fs.existsSync(filePath)).toBeTruthy()
 
       fs.unlinkSync(filePath)
+    })
+  })
+
+  describe(' load() ', () => {
+    let adapter: BaseAdapter
+
+    beforeEach(async () => {
+      // setup PostgreSQL
+      cds.env.requires.db = Object.assign({ kind: 'postgres' }, options.service)
+      cds.env.requires.postgres = options.service
+
+      // clean the stage
+      adapter = await adapterFactory('db', options)
+      await adapter.drop({ dropAll: true })
+      await adapter.deploy({})
+    })
+    describe('in full mode', () => {
+      it('should load the csv data when the table is empty', async () => {
+        let response = await SELECT.from('csw.Beers').columns('COUNT(*) as myCount')
+        expect(parseInt(response[0].myCount)).toEqual(0)
+        await adapter.load(true)
+        response = await SELECT.from('csw.Beers').columns('COUNT(*) as myCount')
+        expect(parseInt(response[0].myCount)).toEqual(2)
+      })
+      it('should delete data from the table and contain only the loaded data', async () => {
+        // insert an entity
+        const insertedUuid = uuid()
+        await INSERT.into('csw.Beers').entries([{ ID: insertedUuid, name: 'Test' }])
+
+        // load the csv file
+        await adapter.load(true)
+
+        // only two rows
+        const countResponse = await SELECT.from('csw.Beers').columns('COUNT(*) as myCount')
+        expect(parseInt(countResponse[0].myCount)).toEqual(2)
+
+        // inserted value is no more present
+        const insertedEntry = await SELECT.from('csw.Beers').where({ ID: insertedUuid })
+        expect(parseInt(insertedEntry.length)).toEqual(0)
+      })
+    })
+    describe('in delta mode', () => {
+      it('should load the csv data when the table is empty', async () => {
+        let response = await SELECT.from('csw.Beers').columns('COUNT(*) as myCount')
+        expect(parseInt(response[0].myCount)).toEqual(0)
+        await adapter.load(false)
+        response = await SELECT.from('csw.Beers').columns('COUNT(*) as myCount')
+        expect(parseInt(response[0].myCount)).toEqual(2)
+      })
+      it('should keep existing data not in a csv file', async () => {
+        // insert an entity
+        const insertedUuid = uuid()
+        await INSERT.into('csw.Beers').entries([{ ID: insertedUuid, name: 'Test' }])
+
+        // load the csv file
+        await adapter.load(false)
+
+        // only two rows
+        const countResponse = await SELECT.from('csw.Beers').columns('COUNT(*) as myCount')
+        expect(parseInt(countResponse[0].myCount)).toEqual(3)
+
+        // inserted value is no more present
+        const insertedEntry = await SELECT.from('csw.Beers').where({ ID: insertedUuid })
+        expect(parseInt(insertedEntry.length)).toEqual(1)
+      })
     })
   })
 })

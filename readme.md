@@ -36,7 +36,7 @@ The rough plan ahead:
 - [x] add automated deployment model 
 - [x] add support for auto-undeployment (implicit drop)
 - [x] add support for updeployment files (explicit drop)
-- [ ] add data import of csv files
+- [x] add data import of csv files
 - [ ] add support for multitenancy
 - [ ] add advanced deployment model including migrations
 - [ ] add more tests

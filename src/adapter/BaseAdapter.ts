@@ -1,11 +1,14 @@
 import { ConstructedQuery } from '@sap/cds/apis/ql'
 import liquibase from '../liquibase'
 import fs from 'fs'
+import * as cdsg from '@sap/cds'
+const cds = cdsg as any
 import path from 'path'
 import { Logger } from 'winston'
 import { configOptions, liquibaseOptions } from './../config'
 import { ChangeLog } from '../ChangeLog'
 import { sortByCasadingViews } from '../util'
+import { DataLoader } from '../DataLoader'
 
 interface DeployOptions {
   dryRun?: boolean
@@ -21,7 +24,7 @@ export abstract class BaseAdapter {
   options: configOptions
   logger: globalThis.Console
   cdsSQL: string[]
-  cdsModel: unknown
+  cdsModel: any
 
   /**
    * The constructor
@@ -58,6 +61,13 @@ export abstract class BaseAdapter {
   abstract async _dropViewsFromCloneDatabase(): Promise<void>
 
   /**
+   * Truncates a table
+   *
+   * @abstract
+   */
+  abstract async _truncateTable(table): Promise<void>
+
+  /**
    * Return the specific options for liquibase.
    *
    * @abstract
@@ -82,12 +92,14 @@ export abstract class BaseAdapter {
   }
 
   /**
-   * TODO: Implement
+   *
+   * @param {boolean} isFullMode
    */
-  public async load() {
-    // await _load_from_js(db, model)
-    // await _init_from_csv(db, model)
-    // await _init_from_json(db, model)
+  public async load(isFullMode: boolean = false) {
+    await this.initCds()
+    const loader = new DataLoader(this, isFullMode)
+    // TODO: Make more flexible
+    await loader.loadFrom(['data', 'csv'])
   }
 
   /**
@@ -108,9 +120,9 @@ export abstract class BaseAdapter {
     // Revisit: Possible liquibase bug to not support changelogs by absolute path?
     //liquibaseOptions.changeLogFile = `${__dirname}../../template/emptyChangelog.json`
     const tmpChangelogPath = 'tmp/emptyChangelog.json'
-    const dirname = path.dirname(tmpChangelogPath);
+    const dirname = path.dirname(tmpChangelogPath)
     if (!fs.existsSync(dirname)) {
-      fs.mkdirSync(dirname);
+      fs.mkdirSync(dirname)
     }
     fs.copyFileSync(`${__dirname}/../../template/emptyChangelog.json`, tmpChangelogPath)
     liquibaseOptions.changeLogFile = tmpChangelogPath
@@ -129,7 +141,12 @@ export abstract class BaseAdapter {
    * Initialize the cds model (only once)
    */
   private async initCds() {
-    this.cdsModel = await cds.load(this.options.service.model)
+    try {
+      this.cdsModel = await cds.load(this.options.service.model)
+    } catch (error) {
+      console.error('Failed loading cds model')
+    }
+
     this.cdsSQL = (cds.compile.to.sql(this.cdsModel) as unknown) as string[]
     this.cdsSQL.sort(sortByCasadingViews)
     return Promise.resolve()
@@ -151,11 +168,11 @@ export abstract class BaseAdapter {
     if (fs.existsSync(temporaryChangelogFile)) {
       fs.unlinkSync(temporaryChangelogFile)
     }
-    const dirname = path.dirname(temporaryChangelogFile);
+    const dirname = path.dirname(temporaryChangelogFile)
     if (!fs.existsSync(dirname)) {
-      fs.mkdirSync(dirname);
+      fs.mkdirSync(dirname)
     }
-    
+
     // Setup the clone
     await this._synchronizeCloneDatabase()
 
@@ -207,6 +224,10 @@ export abstract class BaseAdapter {
       this.logger.log(`[cds-dbm] - delta successfully deployed to the database`)
     } else {
       this.logger.log(updateSQL.stdOut)
+    }
+
+    if (loadMode) {
+      await this.load(loadMode.toLowerCase() === 'full')
     }
 
     fs.unlinkSync(temporaryChangelogFile)
