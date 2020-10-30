@@ -57,6 +57,8 @@ export class DataLoader {
         const file = path.join(folder, each)
         const src = await read(file, 'utf8')
         if (!src) continue
+
+        console.log(`[cds-dbm] - loading data from ${file}`)
         const tx = await cds.services[this.adapter.serviceKey].transaction({})
         await this._insertOrUpdateData(entity, src)
         await tx.commit()
