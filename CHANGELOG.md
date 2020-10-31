@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/mikezaschka/cds-dbm/compare/v0.0.6...v0.0.7) (2020-10-31)
+
+
+### Bug Fixes
+
+* csv file to db name mapping ([e6c1edf](https://github.com/mikezaschka/cds-dbm/commit/e6c1edf9b9137fd3318e7a293112520fd130714e))
+* use regex instead of replaceAll ([ecb6a7a](https://github.com/mikezaschka/cds-dbm/commit/ecb6a7a8873ecd01be9fd4d440a0465043735976))
+
 ### [0.0.6](https://github.com/mikezaschka/cds-dbm/compare/v0.0.5...v0.0.6) (2020-10-30)
 
 ### [0.0.5](https://github.com/mikezaschka/cds-dbm/compare/v0.0.4...v0.0.5) (2020-10-30)
