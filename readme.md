@@ -39,7 +39,7 @@ The rough plan ahead:
 - [x] add support for auto-undeployment (implicit drop)
 - [x] add support for updeployment files (explicit drop)
 - [x] add data import of csv files
-- [ ] add tests for more complex scenarios
+- [ ] add `build` task for SCP CF deployment
 
 **Advanced features**
 
