@@ -222,12 +222,12 @@ export abstract class BaseAdapter {
     const updateSQL: any = await liquibase(liquibaseOptions).run(updateCmd)
     if (!dryRun) {
       this.logger.log(`[cds-dbm] - delta successfully deployed to the database`)
-    } else {
-      this.logger.log(updateSQL.stdOut)
-    }
 
-    if (loadMode) {
-      await this.load(loadMode.toLowerCase() === 'full')
+      if (loadMode) {
+        await this.load(loadMode.toLowerCase() === 'full')
+      }
+    } else {
+      this.logger.log(updateSQL.stdout)
     }
 
     fs.unlinkSync(temporaryChangelogFile)
