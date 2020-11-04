@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.9](https://github.com/mikezaschka/cds-dbm/compare/v0.0.8...v0.0.9) (2020-11-04)
+
+
+### Bug Fixes
+
+* make dry deploy runs not load data and fix console output ([d1e52f0](https://github.com/mikezaschka/cds-dbm/commit/d1e52f07f2327f9fa2448d6aba7fcb28ecef9810))
+
 ### [0.0.8](https://github.com/mikezaschka/cds-dbm/compare/v0.0.7...v0.0.8) (2020-10-31)
 
 ### [0.0.7](https://github.com/mikezaschka/cds-dbm/compare/v0.0.6...v0.0.7) (2020-10-31)
