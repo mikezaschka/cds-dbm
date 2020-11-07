@@ -7,6 +7,16 @@ import { BaseAdapter } from './BaseAdapter'
 import { liquibaseOptions } from './../config'
 import { PostgresDatabase } from './../types/PostgresDatabase'
 
+function getCredentialsForClient(credentials) {
+  return {
+    user: credentials.user || credentials.username,
+    password: credentials.password,
+    host: credentials.host || credentials.hostname,
+    database: credentials.database || credentials.dbname,
+    port: credentials.port,
+  }
+}
+
 export class PostgresAdapter extends BaseAdapter {
   /**
    *
@@ -16,13 +26,7 @@ export class PostgresAdapter extends BaseAdapter {
   async _truncateTable(table: any): Promise<void> {
     const credentials = this.options.service.credentials
     const cloneSchema = this.options.migrations.schema!.default
-    const client = new Client({
-      user: credentials.user,
-      password: credentials.password,
-      host: credentials.host,
-      database: credentials.database,
-      port: credentials.port,
-    })
+    const client = new Client(getCredentialsForClient(credentials))
 
     await client.connect()
     await client.query(`TRUNCATE ${table} RESTART IDENTITY`)
@@ -34,13 +38,7 @@ export class PostgresAdapter extends BaseAdapter {
   async _dropViewsFromCloneDatabase(): Promise<void> {
     const credentials = this.options.service.credentials
     const cloneSchema = this.options.migrations.schema!.clone
-    const client = new Client({
-      user: credentials.user,
-      password: credentials.password,
-      host: credentials.host,
-      database: credentials.database,
-      port: credentials.port,
-    })
+    const client = new Client(getCredentialsForClient(credentials))
 
     await client.connect()
     await client.query(`DROP SCHEMA IF EXISTS ${cloneSchema} CASCADE`)
@@ -69,9 +67,9 @@ export class PostgresAdapter extends BaseAdapter {
     const credentials = this.options.service.credentials
 
     const liquibaseOptions: liquibaseOptions = {
-      username: this.options.service.credentials.user,
+      username: credentials.user || credentials.username,
       password: this.options.service.credentials.password,
-      url: `jdbc:postgresql://${credentials.host}:${credentials.port}/${credentials.database}`,
+      url: `jdbc:postgresql://${credentials.host || credentials.hostname}:${credentials.port}/${credentials.database || credentials.dbname}`,
       classpath: `${__dirname}/../../drivers/postgresql-42.2.8.jar`,
       driver: 'org.postgresql.Driver',
     }
@@ -100,13 +98,7 @@ export class PostgresAdapter extends BaseAdapter {
     const cloneSchema = this.options.migrations.schema!.clone
     const temporaryChangelogFile = `${this.options.migrations.deploy.tmpFile}`
 
-    const client = new Client({
-      user: credentials.user,
-      password: credentials.password,
-      host: credentials.host,
-      database: credentials.database,
-      port: credentials.port,
-    })
+    const client = new Client(getCredentialsForClient(credentials))
     await client.connect()
     await client.query(`DROP SCHEMA IF EXISTS ${cloneSchema} CASCADE`)
     await client.query(`CREATE SCHEMA ${cloneSchema}`)
@@ -138,13 +130,7 @@ export class PostgresAdapter extends BaseAdapter {
   async _deployCdsToReferenceDatabase() {
     const credentials = this.options.service.credentials
     const referenceSchema = this.options.migrations.schema!.reference
-    const client = new Client({
-      user: credentials.user,
-      password: credentials.password,
-      host: credentials.host,
-      database: credentials.database,
-      port: credentials.port,
-    })
+    const client = new Client(getCredentialsForClient(credentials))
     await client.connect()
     await client.query(`DROP SCHEMA IF EXISTS ${referenceSchema} CASCADE`)
     await client.query(`CREATE SCHEMA ${referenceSchema}`)
