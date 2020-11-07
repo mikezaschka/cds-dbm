@@ -2,11 +2,20 @@ import { Client } from 'pg'
 import { PostgresDatabase } from '../../src/types/PostgresDatabase'
 
 function getCredentialsForClient(credentials) {
+  if(credentials.username) {
+    credentials.user = credentials.username
+  }
+  if(credentials.hostname) {
+    credentials.host = credentials.hostname
+  }
+  if(credentials.dbname) {
+    credentials.database = credentials.dbname
+  }
   return {
-    user: credentials.user || credentials.username,
+    user: credentials.user,
     password: credentials.password,
-    host: credentials.host || credentials.hostname,
-    database: credentials.database || credentials.dbname,
+    host: credentials.host,
+    database: credentials.database,
     port: credentials.port,
   }
 }
