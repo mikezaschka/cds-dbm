@@ -8,13 +8,13 @@ import { liquibaseOptions } from './../config'
 import { PostgresDatabase } from './../types/PostgresDatabase'
 
 function getCredentialsForClient(credentials) {
-  if(credentials.username) {
+  if(typeof credentials.username !== 'undefined') {
     credentials.user = credentials.username
   }
-  if(credentials.hostname) {
+  if(typeof credentials.hostname !== 'undefined') {
     credentials.host = credentials.hostname
   }
-  if(credentials.dbname) {
+  if(typeof credentials.dbname !== 'undefined') {
     credentials.database = credentials.dbname
   }
   return {
