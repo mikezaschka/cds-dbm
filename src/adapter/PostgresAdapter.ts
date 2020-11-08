@@ -17,13 +17,21 @@ function getCredentialsForClient(credentials) {
   if(typeof credentials.dbname !== 'undefined') {
     credentials.database = credentials.dbname
   }
-  return {
+  var config = {
     user: credentials.user,
     password: credentials.password,
     host: credentials.host,
     database: credentials.database,
     port: credentials.port,
+    ssl: {}
   }
+  if(credentials.sslrootcert) {
+    config.ssl = {
+      rejectUnauthorized: false,
+      ca: credentials.sslrootcert
+    }
+  }
+  return config
 }
 
 export class PostgresAdapter extends BaseAdapter {
@@ -74,11 +82,15 @@ export class PostgresAdapter extends BaseAdapter {
    */
   liquibaseOptionsFor(cmd: string): liquibaseOptions {
     const credentials = this.options.service.credentials
+    var url = `jdbc:postgresql://${credentials.host || credentials.hostname}:${credentials.port}/${credentials.database || credentials.dbname}`
+    if(credentials.sslrootcert) {
+      url += "?ssl=true"
+    }
 
     const liquibaseOptions: liquibaseOptions = {
       username: credentials.user || credentials.username,
       password: this.options.service.credentials.password,
-      url: `jdbc:postgresql://${credentials.host || credentials.hostname}:${credentials.port}/${credentials.database || credentials.dbname}`,
+      url: url,
       classpath: `${__dirname}/../../drivers/postgresql-42.2.8.jar`,
       driver: 'org.postgresql.Driver',
     }
