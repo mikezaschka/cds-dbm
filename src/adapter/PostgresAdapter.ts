@@ -23,13 +23,15 @@ function getCredentialsForClient(credentials) {
     host: credentials.host,
     database: credentials.database,
     port: credentials.port,
-    ssl: {}
+    ssl: {},
+    sslRequired: false
   }
   if(credentials.sslrootcert) {
     config.ssl = {
       rejectUnauthorized: false,
       ca: credentials.sslrootcert
     }
+    config.sslRequired = true
   }
   return config
 }
