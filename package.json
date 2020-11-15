@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "run-s test:pg:up jest test:pg:down",
-    "jest": "jest --runInBand",
+    "jest": "jest --runInBand --silent",
     "test:pg:up-nobg": "docker-compose -f test/app/docker.postgres.yml up",
     "test:pg:up": "docker-compose -f test/app/docker.postgres.yml up -d",
     "test:pg:down": "docker-compose -f test/app/docker.postgres.yml down",

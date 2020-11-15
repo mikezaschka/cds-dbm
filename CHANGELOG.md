@@ -6,20 +6,18 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.9](https://github.com/mikezaschka/cds-dbm/compare/v0.0.8...v0.0.9) (2020-11-04)
 
-
 ### Bug Fixes
 
-* make dry deploy runs not load data and fix console output ([d1e52f0](https://github.com/mikezaschka/cds-dbm/commit/d1e52f07f2327f9fa2448d6aba7fcb28ecef9810))
+- make dry deploy runs not load data and fix console output ([d1e52f0](https://github.com/mikezaschka/cds-dbm/commit/d1e52f07f2327f9fa2448d6aba7fcb28ecef9810))
 
 ### [0.0.8](https://github.com/mikezaschka/cds-dbm/compare/v0.0.7...v0.0.8) (2020-10-31)
 
 ### [0.0.7](https://github.com/mikezaschka/cds-dbm/compare/v0.0.6...v0.0.7) (2020-10-31)
 
-
 ### Bug Fixes
 
-* csv file to db name mapping ([e6c1edf](https://github.com/mikezaschka/cds-dbm/commit/e6c1edf9b9137fd3318e7a293112520fd130714e))
-* use regex instead of replaceAll ([ecb6a7a](https://github.com/mikezaschka/cds-dbm/commit/ecb6a7a8873ecd01be9fd4d440a0465043735976))
+- csv file to db name mapping ([e6c1edf](https://github.com/mikezaschka/cds-dbm/commit/e6c1edf9b9137fd3318e7a293112520fd130714e))
+- use regex instead of replaceAll ([ecb6a7a](https://github.com/mikezaschka/cds-dbm/commit/ecb6a7a8873ecd01be9fd4d440a0465043735976))
 
 ### [0.0.6](https://github.com/mikezaschka/cds-dbm/compare/v0.0.5...v0.0.6) (2020-10-30)
 

@@ -1,4 +1,4 @@
-import { Client } from 'pg'
+import { Client, ClientConfig } from 'pg'
 import fs from 'fs'
 import * as cdsg from '@sap/cds'
 const cds = cdsg as any
@@ -7,31 +7,28 @@ import { BaseAdapter } from './BaseAdapter'
 import { liquibaseOptions } from './../config'
 import { PostgresDatabase } from './../types/PostgresDatabase'
 
-function getCredentialsForClient(credentials) {
-  if(typeof credentials.username !== 'undefined') {
+const getCredentialsForClient = (credentials) => {
+  if (typeof credentials.username !== 'undefined') {
     credentials.user = credentials.username
   }
-  if(typeof credentials.hostname !== 'undefined') {
+  if (typeof credentials.hostname !== 'undefined') {
     credentials.host = credentials.hostname
   }
-  if(typeof credentials.dbname !== 'undefined') {
+  if (typeof credentials.dbname !== 'undefined') {
     credentials.database = credentials.dbname
   }
-  var config = {
+  const config: ClientConfig = {
     user: credentials.user,
     password: credentials.password,
     host: credentials.host,
     database: credentials.database,
     port: credentials.port,
-    ssl: {},
-    sslRequired: false
   }
-  if(credentials.sslrootcert) {
+  if (credentials.sslrootcert) {
     config.ssl = {
       rejectUnauthorized: false,
-      ca: credentials.sslrootcert
+      ca: credentials.sslrootcert,
     }
-    config.sslRequired = true
   }
   return config
 }
@@ -60,13 +57,9 @@ export class PostgresAdapter extends BaseAdapter {
     const client = new Client(getCredentialsForClient(credentials))
 
     await client.connect()
-    await client.query(`DROP SCHEMA IF EXISTS ${cloneSchema} CASCADE`)
-    await client.query(`CREATE SCHEMA ${cloneSchema}`)
     await client.query(`SET search_path TO ${cloneSchema};`)
 
-    const serviceInstance = cds.services[this.serviceKey] as PostgresDatabase
     for (const query of this.cdsSQL) {
-      await client.query(serviceInstance.cdssql2pgsql(query))
       const [, table, entity] = query.match(/^\s*CREATE (?:(TABLE)|VIEW)\s+"?([^\s(]+)"?/im) || []
       if (!table) {
         await client.query(`DROP VIEW IF EXISTS ${entity} CASCADE`)
@@ -84,9 +77,11 @@ export class PostgresAdapter extends BaseAdapter {
    */
   liquibaseOptionsFor(cmd: string): liquibaseOptions {
     const credentials = this.options.service.credentials
-    var url = `jdbc:postgresql://${credentials.host || credentials.hostname}:${credentials.port}/${credentials.database || credentials.dbname}`
-    if(credentials.sslrootcert) {
-      url += "?ssl=true"
+    var url = `jdbc:postgresql://${credentials.host || credentials.hostname}:${credentials.port}/${
+      credentials.database || credentials.dbname
+    }`
+    if (credentials.sslrootcert) {
+      url += '?ssl=true'
     }
 
     const liquibaseOptions: liquibaseOptions = {

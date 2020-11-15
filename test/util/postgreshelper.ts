@@ -2,13 +2,13 @@ import { Client } from 'pg'
 import { PostgresDatabase } from '../../src/types/PostgresDatabase'
 
 function getCredentialsForClient(credentials) {
-  if(typeof credentials.username !== 'undefined') {
+  if (typeof credentials.username !== 'undefined') {
     credentials.user = credentials.username
   }
-  if(typeof credentials.hostname !== 'undefined') {
+  if (typeof credentials.hostname !== 'undefined') {
     credentials.host = credentials.hostname
   }
-  if(typeof credentials.dbname !== 'undefined') {
+  if (typeof credentials.dbname !== 'undefined') {
     credentials.database = credentials.dbname
   }
   return {
