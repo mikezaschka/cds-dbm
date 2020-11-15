@@ -1,14 +1,27 @@
 import { Client } from 'pg'
 import { PostgresDatabase } from '../../src/types/PostgresDatabase'
 
-async function getTableNamesFromPostgres(credentials) {
-  const client = new Client({
+function getCredentialsForClient(credentials) {
+  if(typeof credentials.username !== 'undefined') {
+    credentials.user = credentials.username
+  }
+  if(typeof credentials.hostname !== 'undefined') {
+    credentials.host = credentials.hostname
+  }
+  if(typeof credentials.dbname !== 'undefined') {
+    credentials.database = credentials.dbname
+  }
+  return {
     user: credentials.user,
     password: credentials.password,
     host: credentials.host,
     database: credentials.database,
     port: credentials.port,
-  })
+  }
+}
+
+async function getTableNamesFromPostgres(credentials) {
+  const client = new Client(getCredentialsForClient(credentials))
   await client.connect()
   const { rows } = await client.query(
     `SELECT table_name, table_type FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;`
@@ -19,13 +32,7 @@ async function getTableNamesFromPostgres(credentials) {
 }
 
 const extractColumnNamesFromPostgres = async (credentials, table) => {
-  const client = new Client({
-    user: credentials.user,
-    password: credentials.password,
-    host: credentials.host,
-    database: credentials.database,
-    port: credentials.port,
-  })
+  const client = new Client(getCredentialsForClient(credentials))
   await client.connect()
   const { rows } = await client.query({
     text: `SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = $1 ORDER BY column_name;`,

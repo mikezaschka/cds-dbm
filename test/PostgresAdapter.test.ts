@@ -1,6 +1,6 @@
 import * as cdsg from '@sap/cds'
 import fs from 'fs'
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 import adapterFactory from '../src/adapter'
 import { configOptions } from '../src/config'
 import cds_deploy from '@sap/cds/lib/srv/db/deploy'

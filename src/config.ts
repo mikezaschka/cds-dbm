@@ -26,10 +26,15 @@ interface serviceOptions {
   impl?: string
   credentials: {
     host?: string
+    hostname?: string
     port?: number
     database?: string
+    dbname?: string
     user?: string
+    username?: string
     password?: string
+    sslcert?: string
+    sslrootcert?: string
   }
 }
 
