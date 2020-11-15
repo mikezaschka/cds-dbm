@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.11](https://github.com/mikezaschka/cds-dbm/compare/v0.0.10...v0.0.11) (2020-11-15)
+
+
+### Bug Fixes
+
+* **tests:** make tests work again ([942d169](https://github.com/mikezaschka/cds-dbm/commit/942d169173aa542f284eb6545f76e31868feade3))
+* connect via ssl ([2e293e5](https://github.com/mikezaschka/cds-dbm/commit/2e293e5d10adcac9563fb440076dddee524c15a7))
+* connect via ssl ([4e9733c](https://github.com/mikezaschka/cds-dbm/commit/4e9733cb3b23723ec6607956ebce12ce081309d3))
+* connection information ([b1ed406](https://github.com/mikezaschka/cds-dbm/commit/b1ed406bf50733f4152ee7221abf4a103058dfc7))
+* SAP CP connection information ([f56de54](https://github.com/mikezaschka/cds-dbm/commit/f56de541bf32e9c0c65135ec885889087ce61c60))
+* variable undefined ([00c1167](https://github.com/mikezaschka/cds-dbm/commit/00c1167c9c233a0d28fbbd873f3219cf32e5a5a1))
+
 ### [0.0.10](https://github.com/mikezaschka/cds-dbm/compare/v0.0.9...v0.0.10) (2020-11-04)
 
 ### [0.0.9](https://github.com/mikezaschka/cds-dbm/compare/v0.0.8...v0.0.9) (2020-11-04)
