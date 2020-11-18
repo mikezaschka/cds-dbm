@@ -41,12 +41,11 @@ export class PostgresAdapter extends BaseAdapter {
    */
   async _truncateTable(table: any): Promise<void> {
     const credentials = this.options.service.credentials
-    const cloneSchema = this.options.migrations.schema!.default
     const client = new Client(getCredentialsForClient(credentials))
 
     await client.connect()
     await client.query(`TRUNCATE ${table} RESTART IDENTITY`)
-    return client.end()
+    client.end()
   }
   /**
    *
@@ -160,5 +159,32 @@ export class PostgresAdapter extends BaseAdapter {
     }
 
     return client.end()
+  }
+
+  /**
+   * @override
+   */
+  async _ensureDatabaseExists() {
+    const clientCredentials = getCredentialsForClient(this.options.service.credentials)
+    delete clientCredentials.database
+    const client = new Client(clientCredentials)
+
+    await client.connect()
+    try {
+      await client.query({
+        text: 'CREATE DATABASE beershop',
+        values: [],
+      })
+    } catch (error) {
+      switch (error.code) {
+        case '42P04': // already exists
+        case '23505': // concurrent attempt
+          break
+        default:
+          throw error
+      }
+    }
+
+    client.end()
   }
 }
