@@ -171,10 +171,9 @@ export class PostgresAdapter extends BaseAdapter {
 
     await client.connect()
     try {
-      await client.query({
-        text: 'CREATE DATABASE beershop',
-        values: [],
-      })
+      // Revisit: should be more save, but does not work
+      // await client.query(`CREATE DATABASE $1`, [this.options.service.credentials.database])
+      await client.query(`CREATE DATABASE ${this.options.service.credentials.database}`)
     } catch (error) {
       switch (error.code) {
         case '42P04': // already exists
