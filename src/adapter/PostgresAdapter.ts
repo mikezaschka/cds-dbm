@@ -166,14 +166,17 @@ export class PostgresAdapter extends BaseAdapter {
    */
   async _ensureDatabaseExists() {
     const clientCredentials = getCredentialsForClient(this.options.service.credentials)
+    const { database }  = clientCredentials
+
+    // Do not connect directly to the database
     delete clientCredentials.database
     const client = new Client(clientCredentials)
 
     await client.connect()
     try {
-      // Revisit: should be more save, but does not work
+      // Revisit: should be more safe, but does not work
       // await client.query(`CREATE DATABASE $1`, [this.options.service.credentials.database])
-      await client.query(`CREATE DATABASE ${this.options.service.credentials.database}`)
+      await client.query(`CREATE DATABASE ${database}`)
     } catch (error) {
       switch (error.code) {
         case '42P04': // already exists
