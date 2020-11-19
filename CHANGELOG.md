@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.13](https://github.com/mikezaschka/cds-dbm/compare/v0.0.12...v0.0.13) (2020-11-19)
+
+
+### Bug Fixes
+
+* **PostgresAdapter:** do not rely on global options which may be overwritten ([c99bccb](https://github.com/mikezaschka/cds-dbm/commit/c99bccbb63b00f588e110ebda04d993748560140))
+
 ### [0.0.12](https://github.com/mikezaschka/cds-dbm/compare/v0.0.11...v0.0.12) (2020-11-18)
 
 ### Features
