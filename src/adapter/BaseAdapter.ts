@@ -82,6 +82,14 @@ export abstract class BaseAdapter {
   abstract liquibaseOptionsFor(cmd: string): liquibaseOptions
 
   /**
+   * 
+   * @param changelog 
+   */
+  protected beforeDeploy(changelog:ChangeLog) {
+    // Can be implemented in subclasses
+  }
+
+  /**
    * Drop tables and views from the database. If +dropAll+ is
    * true, then the whole schema is dropped including non CDS
    * tables/views.
@@ -222,6 +230,10 @@ export abstract class BaseAdapter {
     }
     diffChangeLog.addDropStatementsForUndeployEntities(this.options.migrations.deploy.undeployFile)
     diffChangeLog.reorderChangelog()
+
+    // Call hooks
+    this.beforeDeploy(diffChangeLog);
+
     diffChangeLog.toFile(temporaryChangelogFile)
 
     // Either log the update sql or deploy it to the database

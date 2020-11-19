@@ -6,6 +6,7 @@ import liquibase from '../liquibase'
 import { BaseAdapter } from './BaseAdapter'
 import { liquibaseOptions } from './../config'
 import { PostgresDatabase } from './../types/PostgresDatabase'
+import { ChangeLog } from '../ChangeLog'
 
 const getCredentialsForClient = (credentials) => {
   if (typeof credentials.username !== 'undefined') {
@@ -34,6 +35,15 @@ const getCredentialsForClient = (credentials) => {
 }
 
 export class PostgresAdapter extends BaseAdapter {
+
+  /**
+   * @override
+   * @param changelog 
+   */
+  beforeDeploy(changelog: ChangeLog) {
+    this.removePGStatsFromChangelog(changelog)
+  }
+
   /**
    *
    * @override
@@ -129,6 +139,11 @@ export class PostgresAdapter extends BaseAdapter {
 
     await liquibase(liquibaseOptions).run('diffChangeLog')
 
+    // Remove unnecessary stuff
+    const diffChangeLog = ChangeLog.fromFile(temporaryChangelogFile)
+    this.removePGStatsFromChangelog(diffChangeLog)
+    diffChangeLog.toFile(temporaryChangelogFile)
+
     // Now deploy the copy to the clone
     liquibaseOptions = this.liquibaseOptionsFor('update')
     liquibaseOptions.defaultSchemaName = cloneSchema
@@ -139,6 +154,14 @@ export class PostgresAdapter extends BaseAdapter {
     fs.unlinkSync(temporaryChangelogFile)
 
     return Promise.resolve()
+  }
+
+  private removePGStatsFromChangelog(changelog) {
+    for (const changeLog of changelog.data.databaseChangeLog) {
+      changeLog.changeSet.changes = changeLog.changeSet.changes.filter((change) => {
+        return !(change.createView && change.createView.viewName.includes('pg_stat_statements'))
+      })
+    }
   }
 
   /**
@@ -176,7 +199,8 @@ export class PostgresAdapter extends BaseAdapter {
     try {
       // Revisit: should be more safe, but does not work
       // await client.query(`CREATE DATABASE $1`, [this.options.service.credentials.database])
-      await client.query(`CREATE DATABASE ${database}`)
+      //await client.query(`CREATE DATABASE ${database}`)
+      await client.query(`CREATE DATABASE beershop`)
     } catch (error) {
       switch (error.code) {
         case '42P04': // already exists
