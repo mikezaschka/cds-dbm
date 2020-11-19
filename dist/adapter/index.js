@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+//import { SqliteAdapter } from './SqliteAdapter'
 const PostgresAdapter_1 = require("./PostgresAdapter");
 /**
  * Adapter factory returns an instance of the deployment/migration handler.

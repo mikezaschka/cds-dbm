@@ -61,7 +61,7 @@ class BaseAdapter {
      * @param {boolean} dropAll
      */
     async drop({ dropAll = false }) {
-        await this._ensureDatabaseExists();
+        //await this._ensureDatabaseExists()
         if (dropAll) {
             let liquibaseOptions = this.liquibaseOptionsFor('dropAll');
             await liquibase_1.default(liquibaseOptions).run('dropAll');
@@ -76,7 +76,7 @@ class BaseAdapter {
      * @param {boolean} isFullMode
      */
     async load(isFullMode = false) {
-        await this._ensureDatabaseExists();
+        //await this._ensureDatabaseExists()
         await this.initCds();
         const loader = new DataLoader_1.DataLoader(this, isFullMode);
         // TODO: Make more flexible
@@ -89,7 +89,7 @@ class BaseAdapter {
      * @param {string} outputFile
      */
     async diff(outputFile = 'diff.txt') {
-        await this._ensureDatabaseExists();
+        //await this._ensureDatabaseExists()
         await this.initCds();
         await this._deployCdsToReferenceDatabase();
         // run update to create internal liquibase tables
@@ -134,7 +134,7 @@ class BaseAdapter {
      *
      */
     async deploy({ autoUndeploy = false, loadMode = null, dryRun = false }) {
-        await this._ensureDatabaseExists();
+        //await this._ensureDatabaseExists()
         await this.initCds();
         this.logger.log(`[cds-dbm] - starting delta database deployment of service ${this.serviceKey}`);
         const temporaryChangelogFile = `${this.options.migrations.deploy.tmpFile}`;

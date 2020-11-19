@@ -1,4 +1,4 @@
-import { SqliteAdapter } from './SqliteAdapter'
+//import { SqliteAdapter } from './SqliteAdapter'
 import { PostgresAdapter } from './PostgresAdapter'
 import { configOptions } from '../config'
 
