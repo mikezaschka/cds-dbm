@@ -166,7 +166,7 @@ export class PostgresAdapter extends BaseAdapter {
    */
   async _ensureDatabaseExists() {
     const clientCredentials = getCredentialsForClient(this.options.service.credentials)
-    const { database }  = clientCredentials
+    const { database } = clientCredentials
 
     // Do not connect directly to the database
     delete clientCredentials.database

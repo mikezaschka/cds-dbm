@@ -4,10 +4,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.12](https://github.com/mikezaschka/cds-dbm/compare/v0.0.11...v0.0.12) (2020-11-18)
 
-
 ### Features
 
-* check and create database if not available ([8dddaf4](https://github.com/mikezaschka/cds-dbm/commit/8dddaf484c688b7d3b61de259288306d7153f027))
+- check and create database if not available ([8dddaf4](https://github.com/mikezaschka/cds-dbm/commit/8dddaf484c688b7d3b61de259288306d7153f027))
 
 ### [0.0.11](https://github.com/mikezaschka/cds-dbm/compare/v0.0.10...v0.0.11) (2020-11-15)
 
