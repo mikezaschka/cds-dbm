@@ -159,7 +159,7 @@ export class PostgresAdapter extends BaseAdapter {
   private removePGStatsFromChangelog(changelog) {
     for (const changeLog of changelog.data.databaseChangeLog) {
       changeLog.changeSet.changes = changeLog.changeSet.changes.filter((change) => {
-        return !(change.createView && change.createView.viewName.includes('pg_stat_statements'))
+        return !((change.createView || change.dropView) && change.createView.viewName.includes('pg_stat_statements'))
       })
     }
   }
