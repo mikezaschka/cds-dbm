@@ -159,7 +159,9 @@ class PostgresAdapter extends BaseAdapter_1.BaseAdapter {
         for (const changeLog of changelog.data.databaseChangeLog) {
             changeLog.changeSet.changes = changeLog.changeSet.changes.filter((change) => {
                 return (!(change.createView && change.createView.viewName.includes('pg_stat_statements')) &&
-                    !(change.dropView && change.dropView.viewName.includes('pg_stat_statements')));
+                    !(change.dropView && change.dropView.viewName.includes('pg_stat_statements')) &&
+                    !(change.createView && change.createView.viewName.includes('pg_buffercache')) &&
+                    !(change.dropView && change.dropView.viewName.includes('pg_buffercache')));
             });
         }
     }
