@@ -164,7 +164,7 @@ cds-dbm deploy
 
 ```bash
 cds-dbm deploy
-cds-dbm deploy --create-db 
+cds-dbm deploy --create-db
 cds-dbm deploy --load-via delta
 cds-dbm deploy --auto-undeploy
 cds-dbm deploy --auto-undeploy --dry

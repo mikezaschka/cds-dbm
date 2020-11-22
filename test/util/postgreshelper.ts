@@ -103,12 +103,11 @@ const getEntityNamesFromCds = async (service, model) => {
   })
 }
 
-
-async function dropDatabase (credentials) {
+async function dropDatabase(credentials) {
   const clientCredentials = getCredentialsForClient(credentials)
   const { database } = clientCredentials
   delete clientCredentials.database
-  
+
   const client = new Client(clientCredentials)
   await client.connect()
   await client.query(`SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '${database}';`)
@@ -123,5 +122,5 @@ export {
   getEntityNamesFromCds,
   extractTableColumnNamesFromSQL,
   extractViewColumnNames,
-  dropDatabase
+  dropDatabase,
 }
