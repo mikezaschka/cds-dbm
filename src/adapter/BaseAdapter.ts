@@ -38,6 +38,10 @@ export abstract class BaseAdapter {
     this.logger = global.console
   }
 
+  /*
+   * Abstract functions
+   */
+
   /**
    * Fully deploy the cds data model to the reference database.
    * The reference database needs to the cleared first.
@@ -80,6 +84,22 @@ export abstract class BaseAdapter {
    * @abstract
    */
   abstract liquibaseOptionsFor(cmd: string): liquibaseOptions
+
+  /*
+   * Hooks
+   */
+
+  /**
+   *
+   * @param {ChangeLog} changelog
+   */
+  protected beforeDeploy(changelog: ChangeLog) {
+    // Can be implemented in subclasses
+  }
+
+  /*
+   * API functions
+   */
 
   /**
    * Drop tables and views from the database. If +dropAll+ is
@@ -144,21 +164,6 @@ export abstract class BaseAdapter {
   }
 
   /**
-   * Initialize the cds model (only once)
-   */
-  private async initCds() {
-    try {
-      this.cdsModel = await cds.load(this.options.service.model)
-    } catch (error) {
-      console.error('Failed loading cds model')
-    }
-
-    this.cdsSQL = (cds.compile.to.sql(this.cdsModel) as unknown) as string[]
-    this.cdsSQL.sort(sortByCasadingViews)
-    return Promise.resolve()
-  }
-
-  /**
    * Identifies the changes between the cds definition and the database, generates a delta and deploys
    * this to the database.
    * We use a clone and reference schema to identify the delta, because we need to initially drop
@@ -166,10 +171,10 @@ export abstract class BaseAdapter {
    *
    */
   async deploy({ autoUndeploy = false, loadMode = null, dryRun = false, createDb = false }) {
-    this.logger.log(`[cds-dbm] - starting delta database deployment of service ${this.serviceKey}`);
-    await this.initCds();
+    this.logger.log(`[cds-dbm] - starting delta database deployment of service ${this.serviceKey}`)
+    await this.initCds()
     if (createDb) {
-        await this._createDatabase();
+      await this._createDatabase()
     }
 
     const temporaryChangelogFile = `${this.options.migrations.deploy.tmpFile}`
@@ -239,6 +244,25 @@ export abstract class BaseAdapter {
     }
 
     fs.unlinkSync(temporaryChangelogFile)
+  }
+
+  /*
+   * Internal functions
+   */
+
+  /**
+   * Initialize the cds model (only once)
+   */
+  private async initCds() {
+    try {
+      this.cdsModel = await cds.load(this.options.service.model)
+    } catch (error) {
+      console.error('Failed loading cds model')
+    }
+
+    this.cdsSQL = (cds.compile.to.sql(this.cdsModel) as unknown) as string[]
+    this.cdsSQL.sort(sortByCasadingViews)
+    return Promise.resolve()
   }
 
   /**

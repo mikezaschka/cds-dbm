@@ -6,6 +6,7 @@ import liquibase from '../liquibase'
 import { BaseAdapter } from './BaseAdapter'
 import { liquibaseOptions } from './../config'
 import { PostgresDatabase } from './../types/PostgresDatabase'
+import { ChangeLog } from '../ChangeLog'
 
 const getCredentialsForClient = (credentials) => {
   if (typeof credentials.username !== 'undefined') {
@@ -34,6 +35,14 @@ const getCredentialsForClient = (credentials) => {
 }
 
 export class PostgresAdapter extends BaseAdapter {
+  /**
+   * @override
+   * @param changelog
+   */
+  beforeDeploy(changelog: ChangeLog) {
+    this._removePostgreSystemViewsFromChangelog(changelog)
+  }
+
   /**
    *
    * @override
@@ -129,6 +138,11 @@ export class PostgresAdapter extends BaseAdapter {
 
     await liquibase(liquibaseOptions).run('diffChangeLog')
 
+    // Remove unnecessary stuff
+    const diffChangeLog = ChangeLog.fromFile(temporaryChangelogFile)
+    this._removePostgreSystemViewsFromChangelog(diffChangeLog)
+    diffChangeLog.toFile(temporaryChangelogFile)
+
     // Now deploy the copy to the clone
     liquibaseOptions = this.liquibaseOptionsFor('update')
     liquibaseOptions.defaultSchemaName = cloneSchema
@@ -190,5 +204,26 @@ export class PostgresAdapter extends BaseAdapter {
     }
 
     client.end()
+  }
+
+  /**
+   * Removes PostgreSQL specific view statements from the changelog, that may cloud deployments
+   * to break.
+   *
+   * Revisit: Check why this is the case.
+   *
+   * @param {Changelog} changelog
+   */
+  private _removePostgreSystemViewsFromChangelog(changelog) {
+    for (const changeLog of changelog.data.databaseChangeLog) {
+      changeLog.changeSet.changes = changeLog.changeSet.changes.filter((change) => {
+        return (
+          !(change.createView && change.createView.viewName.includes('pg_stat_statements')) &&
+          !(change.dropView && change.dropView.viewName.includes('pg_stat_statements')) &&
+          !(change.createView && change.createView.viewName.includes('pg_buffercache')) &&
+          !(change.dropView && change.dropView.viewName.includes('pg_buffercache'))
+        )
+      })
+    }
   }
 }
