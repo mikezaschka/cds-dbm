@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.14](https://github.com/mikezaschka/cds-dbm/compare/v0.0.13...v0.0.14) (2020-11-22)
+
+
+### Features
+
+* **deploy:** add option to create a database during deployment ([b5234ee](https://github.com/mikezaschka/cds-dbm/commit/b5234ee83e7d40e6cd24d117da85703d599a73c7))
+* **deploy:** remove PostgreSQL system related views from changelog ([e9a29ea](https://github.com/mikezaschka/cds-dbm/commit/e9a29ea18acde6eb1e3bc2d03ecca6543a42e1d4))
+
+
+### Bug Fixes
+
+* add commitlint config ([44071b9](https://github.com/mikezaschka/cds-dbm/commit/44071b9d26b1b4c86ddb7f8231145a88442ec0de)), closes [#2](https://github.com/mikezaschka/cds-dbm/issues/2)
+
 ### [0.0.13](https://github.com/mikezaschka/cds-dbm/compare/v0.0.12...v0.0.13) (2020-11-19)
 
 ### Bug Fixes
