@@ -164,7 +164,7 @@ export class PostgresAdapter extends BaseAdapter {
   /**
    * @override
    */
-  async _ensureDatabaseExists() {
+  async _createDatabase() {
     const clientCredentials = getCredentialsForClient(this.options.service.credentials)
     const { database } = clientCredentials
 
@@ -177,9 +177,11 @@ export class PostgresAdapter extends BaseAdapter {
       // Revisit: should be more safe, but does not work
       // await client.query(`CREATE DATABASE $1`, [this.options.service.credentials.database])
       await client.query(`CREATE DATABASE ${database}`)
+      this.logger.log(`[cds-dbm] - created database ${database}`)
     } catch (error) {
       switch (error.code) {
         case '42P04': // already exists
+          this.logger.log(`[cds-dbm] - database ${database} is already present`)
         case '23505': // concurrent attempt
           break
         default:

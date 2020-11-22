@@ -68,11 +68,11 @@ export abstract class BaseAdapter {
   abstract async _truncateTable(table): Promise<void>
 
   /**
-   * Check for and if not available, create the database.
+   * Create the database.
    *
    * @abstract
    */
-  abstract async _ensureDatabaseExists(): Promise<void>
+  abstract async _createDatabase(): Promise<void>
 
   /**
    * Return the specific options for liquibase.
@@ -89,7 +89,6 @@ export abstract class BaseAdapter {
    * @param {boolean} dropAll
    */
   public async drop({ dropAll = false }) {
-    await this._ensureDatabaseExists()
     if (dropAll) {
       let liquibaseOptions = this.liquibaseOptionsFor('dropAll')
       await liquibase(liquibaseOptions).run('dropAll')
@@ -104,7 +103,6 @@ export abstract class BaseAdapter {
    * @param {boolean} isFullMode
    */
   public async load(isFullMode: boolean = false) {
-    await this._ensureDatabaseExists()
     await this.initCds()
     const loader = new DataLoader(this, isFullMode)
     // TODO: Make more flexible
@@ -118,7 +116,6 @@ export abstract class BaseAdapter {
    * @param {string} outputFile
    */
   public async diff(outputFile = 'diff.txt') {
-    await this._ensureDatabaseExists()
     await this.initCds()
     await this._deployCdsToReferenceDatabase()
 
@@ -168,11 +165,12 @@ export abstract class BaseAdapter {
    * all the views and we do not want to do this with a potential production database.
    *
    */
-  public async deploy({ autoUndeploy = false, loadMode = null, dryRun = false }: DeployOptions) {
-    await this._ensureDatabaseExists()
-    await this.initCds()
-
-    this.logger.log(`[cds-dbm] - starting delta database deployment of service ${this.serviceKey}`)
+  async deploy({ autoUndeploy = false, loadMode = null, dryRun = false, createDb = false }) {
+    this.logger.log(`[cds-dbm] - starting delta database deployment of service ${this.serviceKey}`);
+    await this.initCds();
+    if (createDb) {
+        await this._createDatabase();
+    }
 
     const temporaryChangelogFile = `${this.options.migrations.deploy.tmpFile}`
     if (fs.existsSync(temporaryChangelogFile)) {

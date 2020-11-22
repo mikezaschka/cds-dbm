@@ -88,7 +88,7 @@ _cds-dbm_ requires some additional configuration added to your package.json:
 
 ```JSON
   "cds": {
-    ...
+    //...
     "migrations": {
       "db": {
         "schema": {
@@ -155,7 +155,7 @@ cds-dbm deploy
 
 **Flags**
 
-- `service` (_array_) - The service (defaults to `db`)
+- `create-db` (_boolean_) - If set, the deploy task tries to create the database before actually deploying the data model. The deployment will not break, if the database has already been created before.
 - `auto-undeploy` (_boolean_) - **WARNING**: Drops all tables not known to your data model from the database. This should **only** be used if your cds includes all tables/views in your db (schema). Otherwise it is highly recommended to use an undeployment file.
 - `load-via` (_string_) - Can be either `full` (truncate and insert) or `delta` (check for existing records, then update or insert)
 - `dry` (_boolean_) - Does not apply the SQL to the database but logs it to stdout
@@ -164,6 +164,7 @@ cds-dbm deploy
 
 ```bash
 cds-dbm deploy
+cds-dbm deploy --create-db 
 cds-dbm deploy --load-via delta
 cds-dbm deploy --auto-undeploy
 cds-dbm deploy --auto-undeploy --dry

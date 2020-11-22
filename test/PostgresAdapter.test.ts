@@ -10,6 +10,7 @@ import {
   extractTableColumnNamesFromSQL,
   getEntityNamesFromCds,
   extractViewColumnNames,
+  dropDatabase,
   extractColumnNamesFromPostgres,
 } from './util/postgreshelper'
 import { BaseAdapter } from '../src/adapter/BaseAdapter'
@@ -100,6 +101,15 @@ describe('PostgresAdapter', () => {
       // clean the stage
       adapter = await adapterFactory('db', options)
     })
+
+    it('should create the database if the create-db option is given', async () => {
+      await dropDatabase(options.service.credentials)
+
+      await adapter.deploy({ createDb: true })
+      const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+      expect(existingTablesInPostgres.length).toBeGreaterThan(0)
+    })
+
     it('should create the complete data model in an empty database', async () => {
       await adapter.drop({ dropAll: true })
       await adapter.deploy({})

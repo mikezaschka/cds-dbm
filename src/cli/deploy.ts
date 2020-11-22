@@ -22,11 +22,20 @@ exports.builder = {
     alias: 'l',
     type: String,
   },
+  'create-db': {
+    alias: 'c',
+    type: boolean,
+  },
 }
 exports.handler = async (argv: any) => {
   for (const service of argv.service) {
     const options = await config(service)
     const adapter = await adapterFactory(service, options)
-    await adapter!.deploy({ autoUndeploy: argv.autoUndeploy, dryRun: argv.dry, loadMode: argv.loadVia })
+    await adapter!.deploy({
+      autoUndeploy: argv.autoUndeploy,
+      dryRun: argv.dry,
+      loadMode: argv.loadVia,
+      createDb: argv.createDb,
+    })
   }
 }
