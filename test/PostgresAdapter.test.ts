@@ -173,8 +173,6 @@ describe('PostgresAdapter', () => {
         options.migrations.deploy.undeployFile = './test/app/db/undeploy.json'
         adapter = await adapterFactory('db', options)
 
-        console.log(await getTableNamesFromPostgres(options.service.credentials))
-
         await adapter.deploy({})
 
         const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)

@@ -186,8 +186,6 @@ export class PostgresAdapter extends BaseAdapter {
     delete clientCredentials.database
     const client = new Client(clientCredentials)
 
-    console.log("TEST");
-
     await client.connect()
     try {
       // Revisit: should be more safe, but does not work

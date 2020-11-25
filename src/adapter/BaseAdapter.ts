@@ -171,7 +171,6 @@ export abstract class BaseAdapter {
    *
    */
   async deploy({ autoUndeploy = false, loadMode = null, dryRun = false, createDb = false }) {
-    console.log("CREATING");
     this.logger.log(`[cds-dbm] - starting delta database deployment of service ${this.serviceKey}`)
     if (createDb) {
       await this._createDatabase()
