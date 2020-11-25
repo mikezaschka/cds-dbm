@@ -2,7 +2,7 @@
   "name": "deploy",
   "dependencies": {
     "@sap/cds": "~4.3.1",
-    "cds-dbm": "~0.0.15",
+    "cds-dbm": "~0.0.16",
     "cds-pg": "~0.0.30"
   },
   "scripts": {
