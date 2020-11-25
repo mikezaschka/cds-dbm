@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.15](https://github.com/mikezaschka/cds-dbm/compare/v0.0.14...v0.0.15) (2020-11-25)
+
+
+### Features
+
+* **build:** add build task for cf deployments ([8b1b9f8](https://github.com/mikezaschka/cds-dbm/commit/8b1b9f864c6ea00da983be8e1d27bc33897fd59f))
+
+
+### Bug Fixes
+
+* **postgresadapter:** enable before hook in deploy ([99c17df](https://github.com/mikezaschka/cds-dbm/commit/99c17dff5591901a42edcb02500dcfa77599c32b))
+
 ### [0.0.14](https://github.com/mikezaschka/cds-dbm/compare/v0.0.13...v0.0.14) (2020-11-22)
 
 
