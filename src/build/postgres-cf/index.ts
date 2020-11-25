@@ -1,19 +1,11 @@
 import foss from '@sap/cds-foss'
 const fs = foss('fs-extra')
+import { chmodSync } from "fs"
 import path from 'path'
 const BuildTaskHandlerOData = require('@sap/cds/lib/build/buildTaskHandlerOData')
 const { BuildMessage, BuildError } = require('@sap/cds/lib/build/util')
-const { getHanaDbModuleDescriptor, getServiceModuleDescriptor } = require('@sap/cds/lib/build/mtaUtil')
-const {
-  BUILD_OPTION_OUTPUT_MODE,
-  OUTPUT_MODE_RESULT_ONLY,
-  ODATA_VERSION,
-  ODATA_VERSION_V2,
-  BUILD_NODEJS_EDMX_GENERAION,
-  BUILD_TASK_HANA,
-  FOLDER_GEN,
-  FILE_EXT_CDS,
-} = require('@sap/cds/lib/build/constants')
+const { getHanaDbModuleDescriptor } = require('@sap/cds/lib/build/mtaUtil')
+const { FOLDER_GEN, FILE_EXT_CDS } = require('@sap/cds/lib/build/constants')
 
 const DEBUG = process.env.DEBUG
 const FILE_NAME_MANIFEST_YML = 'manifest.yml'
@@ -62,10 +54,11 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
     await this._writeManifestYml()
 
     const aptFile = path.join(__dirname, 'template', 'apt.yml')
-    await this.copy(aptFile).to(path.join(this.task.dest, "apt.yml"))
+    await this.copy(aptFile).to(path.join(this.task.dest, 'apt.yml'))
 
     const deployFile = path.join(__dirname, 'template', 'deploy.sh')
-    await this.copy(deployFile).to(path.join(this.task.dest, "deploy.sh"))
+    await this.copy(deployFile).to(path.join(this.task.dest, 'deploy.sh'))
+    chmodSync(path.join(this.task.dest, 'deploy.sh'), "777")
   }
 
   /**
@@ -102,25 +95,6 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
         (extname === FILE_EXT_CSV && !entry.startsWith(dbCsvDir) && !entry.startsWith(dbCsvDir))
       )
     })) || []
-
-    // handle *.csv and *.hdbtabledata located in '<dbSrc>/data' and '<dbSrc>/csv' folder
-    //const allFiles = csvDirs.reduce((acc, csvDir) => {
-    //  return acc.concat(
-    //    BuildTaskHandlerOData._find(csvDir, (entry) => {
-    //      if (fs.statSync(entry).isDirectory()) {
-    //        return false
-    //      }
-    //      const extname = path.extname(entry)
-    //      return extname === FILE_EXT_CSV
-    //    })
-    //  )
-    //}, [])
-//
-    //return Promise.all(
-    //  allFiles.map((file) => {
-    //    //return this.copy(file).to(path.join(this.task.options.compileDest, path.relative(src, file)))
-    //  })
-    //)
   }
 
   async _writePackageJson() {
