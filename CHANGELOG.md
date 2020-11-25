@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.16](https://github.com/mikezaschka/cds-dbm/compare/v0.0.15...v0.0.16) (2020-11-25)
+
+
+### Bug Fixes
+
+* **build:** use at least version 0.0.16 for cf deployments ([b2cedbe](https://github.com/mikezaschka/cds-dbm/commit/b2cedbedb890b27d7faf6651d0ffeb38cbd33e40))
+* **deploy:** correct java path ([0503d80](https://github.com/mikezaschka/cds-dbm/commit/0503d80ebc6547a6d6700a7cc60172e8505d902a))
+* **deploy:** make deploy.sh executable ([d6c7b52](https://github.com/mikezaschka/cds-dbm/commit/d6c7b52b2bec98fd5187f3ac23090c665a95d13a))
+
 ### [0.0.15](https://github.com/mikezaschka/cds-dbm/compare/v0.0.14...v0.0.15) (2020-11-25)
 
 
