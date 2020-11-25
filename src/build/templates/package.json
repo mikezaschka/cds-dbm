@@ -1,9 +1,0 @@
-{
-  "name": "deploy",
-  "dependencies": {
-    "cds-dbm": "^0.0.10"
-  },
-  "scripts": {
-    "start": "npx cds-dbm deploy"
-  }
-}

@@ -1,0 +1,35 @@
+{
+  "name": "deploy",
+  "dependencies": {
+    "@sap/cds": "~4.3.1",
+    "cds-dbm": "~0.0.15",
+    "cds-pg": "~0.0.30"
+  },
+  "scripts": {
+    "start": "./deploy.sh"
+  },
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "database"
+      },
+      "database": {
+        "impl": "cds-pg",
+        "model": "csn.json"
+      }
+    },
+    "migrations": {
+      "db": {
+        "schema": {
+          "default": "public",
+          "clone": "_cdsdbm_clone",
+          "reference": "_cdsdbm_ref"
+        },
+        "deploy": {
+          "tmpFile": "tmp/_autodeploy.json",
+          "undeployFile": "db/undeploy.json"
+        }
+      }
+    }
+  }
+}

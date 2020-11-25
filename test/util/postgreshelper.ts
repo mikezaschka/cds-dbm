@@ -110,8 +110,13 @@ async function dropDatabase(credentials) {
 
   const client = new Client(clientCredentials)
   await client.connect()
-  await client.query(`SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '${database}';`)
-  await client.query(`DROP database ${database}`)
+  try {
+    await client.query(`SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '${database}';`)
+    await client.query(`DROP database ${database} `)  
+  } catch (error) {
+    console.error(error)
+  }
+  
   await client.end()
 }
 

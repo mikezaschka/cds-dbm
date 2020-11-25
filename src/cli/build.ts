@@ -1,20 +1,30 @@
-import { array, boolean } from 'yargs'
-import { config } from '../config'
-import adapterFactory from '../adapter'
+const path = require('path')
+const fs = require('@sap/cds-foss')('fs-extra')
+import * as cdsg from '@sap/cds'
+const cds = cdsg as any
+const { DbmBuildTaskFactory } = require('./../build/buildTaskFactory')
+const BuildTaskEngine = require('./../build/buildTaskEngine')
 
-exports.command = 'build '
+exports.command = 'build'
 exports.desc = 'Generates build artifacts'
-exports.builder = {
-  target: {
-    alias: 't',
-    type: String,
-  },
-}
+exports.builder = {}
 exports.handler = async (argv: any) => {
-  for (const service of argv.service) {
-    const options = await config(service)
-    const adapter = await adapterFactory(service, options)
-    //await adapter!.build({ autoUndeploy: argv.autoUndeploy, dryRun: argv.dry, loadMode: argv.loadVia })
-    throw "not implemented yet"
+  const logger = global.console
+  const projectPath = path.resolve(argv.project || '.')
+
+  if (!fs.lstatSync(projectPath).isDirectory()) {
+    return Promise.reject(`Project [${projectPath}] does not exist`)
   }
+
+  if (cds.env.features.snapi === 'runtime-only') cds.env.features.snapi = false
+  const buildOptions = _mergeOptions({ root: projectPath }, argv)
+  let tasks = await new DbmBuildTaskFactory(logger, cds).getTasks(buildOptions)
+  return new BuildTaskEngine(logger, cds).processTasks(tasks, buildOptions)
+}
+
+function _mergeOptions(buildOptions, options) {
+  buildOptions['log-level'] = options['log-level']
+  buildOptions.cli = options.cli
+  buildOptions.cmdOptions = options
+  return buildOptions
 }

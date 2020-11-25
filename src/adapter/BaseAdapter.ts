@@ -48,35 +48,35 @@ export abstract class BaseAdapter {
    *
    * @abstract
    */
-  abstract async _deployCdsToReferenceDatabase(): Promise<void>
+  abstract _deployCdsToReferenceDatabase(): Promise<void>
 
   /**
    * Synchronize the clone schema with the default one.
    *
    * @abstract
    */
-  abstract async _synchronizeCloneDatabase(): Promise<void>
+  abstract _synchronizeCloneDatabase(): Promise<void>
 
   /**
    * Drop the views from the clone, since updating views is hard.
    *
    * @abstract
    */
-  abstract async _dropViewsFromCloneDatabase(): Promise<void>
+  abstract _dropViewsFromCloneDatabase(): Promise<void>
 
   /**
    * Truncates a table
    *
    * @abstract
    */
-  abstract async _truncateTable(table): Promise<void>
+  abstract _truncateTable(table): Promise<void>
 
   /**
    * Create the database.
    *
    * @abstract
    */
-  abstract async _createDatabase(): Promise<void>
+  abstract _createDatabase(): Promise<void>
 
   /**
    * Return the specific options for liquibase.
@@ -171,11 +171,12 @@ export abstract class BaseAdapter {
    *
    */
   async deploy({ autoUndeploy = false, loadMode = null, dryRun = false, createDb = false }) {
+    console.log("CREATING");
     this.logger.log(`[cds-dbm] - starting delta database deployment of service ${this.serviceKey}`)
-    await this.initCds()
     if (createDb) {
       await this._createDatabase()
     }
+    await this.initCds()
 
     const temporaryChangelogFile = `${this.options.migrations.deploy.tmpFile}`
     if (fs.existsSync(temporaryChangelogFile)) {
@@ -226,8 +227,8 @@ export abstract class BaseAdapter {
     diffChangeLog.addDropStatementsForUndeployEntities(this.options.migrations.deploy.undeployFile)
     diffChangeLog.reorderChangelog()
 
-     // Call hooks
-     this.beforeDeploy(diffChangeLog);
+    // Call hooks
+    this.beforeDeploy(diffChangeLog)
 
     diffChangeLog.toFile(temporaryChangelogFile)
 
