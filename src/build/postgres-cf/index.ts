@@ -1,6 +1,6 @@
 import foss from '@sap/cds-foss'
 const fs = foss('fs-extra')
-import { chmodSync } from "fs"
+import { chmodSync, existsSync } from 'fs'
 import path from 'path'
 const BuildTaskHandlerOData = require('@sap/cds/lib/build/buildTaskHandlerOData')
 const { BuildMessage, BuildError } = require('@sap/cds/lib/build/util')
@@ -12,6 +12,7 @@ const FILE_NAME_MANIFEST_YML = 'manifest.yml'
 const DEFAULT_COMPILE_DEST_FOLDER = path.normalize('src/gen')
 const FILE_EXT_CSV = '.csv'
 const FILE_NAME_PACKAGE_JSON = 'package.json'
+const DEPLOY_CMD = 'npx cds-dbm deploy --load-via delta'
 
 class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
   constructor(task, buildOptions) {
@@ -22,6 +23,8 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
   }
 
   init() {
+    this.task.options.deployCmd = this.task.options.deployCmd || DEPLOY_CMD
+
     this.task.options.compileDest = path.resolve(
       this.task.dest,
       this.task.options.compileDest || DEFAULT_COMPILE_DEST_FOLDER
@@ -56,9 +59,18 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
     const aptFile = path.join(__dirname, 'template', 'apt.yml')
     await this.copy(aptFile).to(path.join(this.task.dest, 'apt.yml'))
 
+    const migrationOptions = cds.env['migrations']['db']
+    if (migrationOptions.deploy.undeployFile && existsSync(path.join(src, migrationOptions.deploy.undeployFile))) {
+      await this.copy(path.join(src, migrationOptions.deploy.undeployFile)).to(
+        path.join(this.task.dest, 'undeploy.json')
+      )
+    }
+
     const deployFile = path.join(__dirname, 'template', 'deploy.sh')
-    await this.copy(deployFile).to(path.join(this.task.dest, 'deploy.sh'))
-    chmodSync(path.join(this.task.dest, 'deploy.sh'), "777")
+    const targetDeployFile = path.join(this.task.dest, 'deploy.sh')
+    await this.copy(deployFile).to(targetDeployFile)
+    fs.appendFileSync(targetDeployFile, this.task.options.deployCmd)
+    chmodSync(targetDeployFile, '777')
   }
 
   /**

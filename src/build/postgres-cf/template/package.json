@@ -27,7 +27,7 @@
         },
         "deploy": {
           "tmpFile": "tmp/_autodeploy.json",
-          "undeployFile": "db/undeploy.json"
+          "undeployFile": "undeploy.json"
         }
       }
     }

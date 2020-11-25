@@ -5,5 +5,4 @@ export PATH=$PATH:/home/vcap/deps/1/bin
 mkdir -p /home/vcap/.postgresql
 export POSTGRESQL_ROOT_CERT="/home/vcap/.postgresql/root.crt"
 echo $VCAP_SERVICES | jq --raw-output '."postgresql-db"[0].credentials.sslrootcert' > $POSTGRESQL_ROOT_CERT
-# env
-npx cds-dbm deploy --load-via delta
+# Execution cmd will be inserted in the next line
