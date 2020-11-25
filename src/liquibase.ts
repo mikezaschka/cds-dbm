@@ -62,7 +62,6 @@ class Liquibase {
     let promise = new Promise((resolve, reject) => {
       child = childProcess.exec(command, options, (error: any, stdout: any, stderr: any) => {
         if (error) {
-          
           //console.log('\n', stdout)
           //console.error('\n', stderr)
 
@@ -72,7 +71,7 @@ class Liquibase {
         }
 
         resolve({
-          stdout: stdout, 
+          stdout: stdout,
         })
       })
     })

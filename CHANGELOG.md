@@ -4,37 +4,32 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.16](https://github.com/mikezaschka/cds-dbm/compare/v0.0.15...v0.0.16) (2020-11-25)
 
-
 ### Bug Fixes
 
-* **build:** use at least version 0.0.16 for cf deployments ([b2cedbe](https://github.com/mikezaschka/cds-dbm/commit/b2cedbedb890b27d7faf6651d0ffeb38cbd33e40))
-* **deploy:** correct java path ([0503d80](https://github.com/mikezaschka/cds-dbm/commit/0503d80ebc6547a6d6700a7cc60172e8505d902a))
-* **deploy:** make deploy.sh executable ([d6c7b52](https://github.com/mikezaschka/cds-dbm/commit/d6c7b52b2bec98fd5187f3ac23090c665a95d13a))
+- **build:** use at least version 0.0.16 for cf deployments ([b2cedbe](https://github.com/mikezaschka/cds-dbm/commit/b2cedbedb890b27d7faf6651d0ffeb38cbd33e40))
+- **deploy:** correct java path ([0503d80](https://github.com/mikezaschka/cds-dbm/commit/0503d80ebc6547a6d6700a7cc60172e8505d902a))
+- **deploy:** make deploy.sh executable ([d6c7b52](https://github.com/mikezaschka/cds-dbm/commit/d6c7b52b2bec98fd5187f3ac23090c665a95d13a))
 
 ### [0.0.15](https://github.com/mikezaschka/cds-dbm/compare/v0.0.14...v0.0.15) (2020-11-25)
 
-
 ### Features
 
-* **build:** add build task for cf deployments ([8b1b9f8](https://github.com/mikezaschka/cds-dbm/commit/8b1b9f864c6ea00da983be8e1d27bc33897fd59f))
-
+- **build:** add build task for cf deployments ([8b1b9f8](https://github.com/mikezaschka/cds-dbm/commit/8b1b9f864c6ea00da983be8e1d27bc33897fd59f))
 
 ### Bug Fixes
 
-* **postgresadapter:** enable before hook in deploy ([99c17df](https://github.com/mikezaschka/cds-dbm/commit/99c17dff5591901a42edcb02500dcfa77599c32b))
+- **postgresadapter:** enable before hook in deploy ([99c17df](https://github.com/mikezaschka/cds-dbm/commit/99c17dff5591901a42edcb02500dcfa77599c32b))
 
 ### [0.0.14](https://github.com/mikezaschka/cds-dbm/compare/v0.0.13...v0.0.14) (2020-11-22)
 
-
 ### Features
 
-* **deploy:** add option to create a database during deployment ([b5234ee](https://github.com/mikezaschka/cds-dbm/commit/b5234ee83e7d40e6cd24d117da85703d599a73c7))
-* **deploy:** remove PostgreSQL system related views from changelog ([e9a29ea](https://github.com/mikezaschka/cds-dbm/commit/e9a29ea18acde6eb1e3bc2d03ecca6543a42e1d4))
-
+- **deploy:** add option to create a database during deployment ([b5234ee](https://github.com/mikezaschka/cds-dbm/commit/b5234ee83e7d40e6cd24d117da85703d599a73c7))
+- **deploy:** remove PostgreSQL system related views from changelog ([e9a29ea](https://github.com/mikezaschka/cds-dbm/commit/e9a29ea18acde6eb1e3bc2d03ecca6543a42e1d4))
 
 ### Bug Fixes
 
-* add commitlint config ([44071b9](https://github.com/mikezaschka/cds-dbm/commit/44071b9d26b1b4c86ddb7f8231145a88442ec0de)), closes [#2](https://github.com/mikezaschka/cds-dbm/issues/2)
+- add commitlint config ([44071b9](https://github.com/mikezaschka/cds-dbm/commit/44071b9d26b1b4c86ddb7f8231145a88442ec0de)), closes [#2](https://github.com/mikezaschka/cds-dbm/issues/2)
 
 ### [0.0.13](https://github.com/mikezaschka/cds-dbm/compare/v0.0.12...v0.0.13) (2020-11-19)
 
