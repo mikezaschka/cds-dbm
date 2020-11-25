@@ -225,6 +225,10 @@ export abstract class BaseAdapter {
     }
     diffChangeLog.addDropStatementsForUndeployEntities(this.options.migrations.deploy.undeployFile)
     diffChangeLog.reorderChangelog()
+
+     // Call hooks
+     this.beforeDeploy(diffChangeLog);
+
     diffChangeLog.toFile(temporaryChangelogFile)
 
     // Either log the update sql or deploy it to the database
