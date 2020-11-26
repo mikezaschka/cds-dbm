@@ -47,7 +47,6 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
     }
 
     const model = await this.loadModel(modelPaths)
-
     const extCsn = this.cds.compile.to.json(model)
     const extModel = JSON.parse(extCsn)
     await this.write(extCsn).to(path.join(destGen, 'csn.json'))
@@ -55,22 +54,12 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
     await this._copyNativeContent(src, dest)
     await this._writePackageJson()
     await this._writeManifestYml()
+    await this._writeDeployShellScript()
+    await this._writeUndeployJson(src)
+    await this._writeCfIgnore()
 
     const aptFile = path.join(__dirname, 'template', 'apt.yml')
     await this.copy(aptFile).to(path.join(this.task.dest, 'apt.yml'))
-
-    const migrationOptions = cds.env['migrations']['db']
-    if (migrationOptions.deploy.undeployFile && existsSync(path.join(src, migrationOptions.deploy.undeployFile))) {
-      await this.copy(path.join(src, migrationOptions.deploy.undeployFile)).to(
-        path.join(this.task.dest, 'undeploy.json')
-      )
-    }
-
-    const deployFile = path.join(__dirname, 'template', 'deploy.sh')
-    const targetDeployFile = path.join(this.task.dest, 'deploy.sh')
-    await this.copy(deployFile).to(targetDeployFile)
-    fs.appendFileSync(targetDeployFile, this.task.options.deployCmd)
-    chmodSync(targetDeployFile, '777')
   }
 
   /**
@@ -109,6 +98,9 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
     })) || []
   }
 
+  /**
+   *
+   */
   async _writePackageJson() {
     const packageJson = path.join(this.task.src, 'package.json')
     const exists = await fs.pathExists(packageJson)
@@ -118,10 +110,43 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
     }
     if (this.isStagingBuild() && !exists) {
       const content = await this._readTemplateAsJson(FILE_NAME_PACKAGE_JSON)
+
+      // if specified, add a start command
+      if (this.task.options.startCmd) {
+        content.scripts['start'] = this.task.options.startCmd
+      }
+
       await this.write(content).to(path.join(this.task.dest, FILE_NAME_PACKAGE_JSON))
     }
   }
 
+  /**
+   *
+   */
+  async _writeDeployShellScript() {
+    const deployFile = path.join(__dirname, 'template', 'deploy.sh')
+    const targetDeployFile = path.join(this.task.dest, 'deploy.sh')
+    await this.copy(deployFile).to(targetDeployFile)
+    fs.appendFileSync(targetDeployFile, this.task.options.deployCmd)
+    chmodSync(targetDeployFile, '777')
+  }
+
+  /**
+   *
+   * @param src
+   */
+  async _writeUndeployJson(src) {
+    const migrationOptions = cds.env['migrations']['db']
+    if (migrationOptions.deploy.undeployFile && existsSync(path.join(src, migrationOptions.deploy.undeployFile))) {
+      await this.copy(path.join(src, migrationOptions.deploy.undeployFile)).to(
+        path.join(this.task.dest, 'undeploy.json')
+      )
+    }
+  }
+
+  /**
+   *
+   */
   async _writeManifestYml() {
     if (!this.isStagingBuild()) {
       return
