@@ -135,9 +135,14 @@ export abstract class BaseAdapter {
    *
    * @param {string} outputFile
    */
-  public async diff(outputFile = 'diff.txt') {
+  public async diff(outputFile = null) {
+    let keepFile = true
     await this.initCds()
     await this._deployCdsToReferenceDatabase()
+    if (!outputFile) {
+      outputFile = 'tmp/diff.txt'
+      keepFile = false
+    }
 
     // run update to create internal liquibase tables
     let liquibaseOptions = this.liquibaseOptionsFor('update')
@@ -159,8 +164,13 @@ export abstract class BaseAdapter {
     liquibaseOptions = this.liquibaseOptionsFor('diff')
     liquibaseOptions.outputFile = outputFile
     await liquibase(liquibaseOptions).run('diff')
-
-    this.logger.log(`[cds-dbm] - diff file generated at ${liquibaseOptions.outputFile}`)
+    if (!keepFile) {
+      const buffer = fs.readFileSync(liquibaseOptions.outputFile)
+      this.logger.log(buffer.toString())
+      fs.unlinkSync(liquibaseOptions.outputFile)
+    } else {
+      this.logger.log(`[cds-dbm] - diff file generated at ${liquibaseOptions.outputFile}`)
+    }
   }
 
   /**
