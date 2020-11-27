@@ -24,14 +24,18 @@ Nevertheless it may be suitable to use the <a href="https://github.com/liquibase
 
 ## Current status
 
-This is an alpha version not ready to be used in production environments.
+This is a functional version, but should not yet  be used in production environments.
+There are some example apps already using `cds-dbm` in combination with `cds-pg`:
+
+* https://github.com/mikezaschka/cap-devtoberfest
+* https://github.com/gregorwolf/pg-beershop
+
+There are also some blogpost in the SAP Community showcasing the functionlity:
+
+* https://blogs.sap.com/2020/11/16/getting-started-with-cap-on-postgresql-node.js/
+* TODO: Add second post when available
+
 The rough plan ahead:
-
-**Project setup**
-
-- [x] inital project setup including TypeScript and liquibase
-- [x] release as npm package
-- [ ] fully leverage github build pipeline (github actions, ts > js)
 
 **Basic features**
 
@@ -39,7 +43,7 @@ The rough plan ahead:
 - [x] add support for auto-undeployment (implicit drop)
 - [x] add support for updeployment files (explicit drop)
 - [x] add data import of csv files
-- [ ] add `build` task for SCP CF deployment
+- [x] add `build` task for SCP CF deployment
 
 **Advanced features**
 
@@ -49,7 +53,7 @@ The rough plan ahead:
 **Database support**
 
 - [x] add PostgresSQL adapter (<a href="https://github.com/sapmentors/cds-pg">cds-pg</a>)
-- [ ] verify and maybe add support for SQLite
+- ~~[ ] verify and maybe add support for SQLite~~
 
 Contributions are welcome. Details on how to contribute will be added soon.
 
@@ -218,7 +222,7 @@ cds-dbm drop --all
 
 #### `diff`
 
-Generates a descriptive text file containing all the differences between the defined cds model and the current status of the database.
+Generates a descriptive text containing all the differences between the defined cds model and the current status of the database. By default, the information will be logged to the console. 
 
 **Usage**
 
@@ -228,13 +232,44 @@ cds-dbm diff
 
 **Flags**
 
-- `file` (_string_) - The file path of the diff file. If not set this will default to `<project-root>/diff.txt`
+- `to-file` (_string_) - If set, the diff information will be written into the file and not logged in the console.
 
 **Examples**
 
 ```bash
 cds-dbm diff
-cds-dbm diff --file db/diff.txt
+cds-dbm diff --to-file db/diff.txt
+```
+
+#### `build`
+
+Executes the defined cds build tasks, either in a .cdsrc or in the package json. `cds-dbm` comes with a pre-baked build task, to deploy the data model to a PostgreSQL database on SAP Cloud Platform.
+
+TODO: Insert link to SAP Community blogpost, when available
+
+Example configuration:
+```json
+"build": {
+      "tasks": [
+        {
+          "use": "node-cf",
+          "src": "srv"
+        },
+        {
+          "use": "postgres-cf",
+          "src": "db",
+          "options": {
+            "deployCmd": "npx cds-dbm deploy --load-via delta --auto-undeploy"
+          }
+        }
+      ]
+    },
+```
+
+**Usage**
+
+```bash
+cds-dbm build
 ```
 
 ---
