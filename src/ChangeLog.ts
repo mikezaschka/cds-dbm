@@ -23,8 +23,10 @@ export class ChangeLog {
    * The created changelog file needs to be sorted in order to work well.
    * The sort order should be:
    *
-   * - alter table statements (add_column, drop_column, ...)
+   * - drop view statements
+   * - drop table statements
    * - create table statements
+   * - alter table statements (add_column, drop_column, ...)
    * - create view statements that are not based on other views
    * - create view statements that are based on other views
    *
@@ -32,21 +34,124 @@ export class ChangeLog {
    */
   public reorderChangelog() {
     this.data.databaseChangeLog.sort((a: any, b: any) => {
-      if (a.changeSet.changes[0].createView || !b.changeSet.changes[0].createView) {
-        return 1
-      }
-      if (!a.changeSet.changes[0].createView || b.changeSet.changes[0].createView) {
+      // Drop view
+      if (a.changeSet.changes[0].dropView) {
         return -1
       }
+      if (b.changeSet.changes[0].dropView) {
+        return 1
+      }
 
-      if (a.changeSet.changes[0].createView || b.changeSet.changes[0].createView) {
-        if (a.changeSet.changes[0].createView.selectQuery.contains(b.changeSet.changes[0].createView.viewName)) {
+      // Drop table
+      if (a.changeSet.changes[0].dropTable) {
+        return !b.changeSet.changes[0].dropView ? -1 : 1
+      }
+
+      if (b.changeSet.changes[0].dropTable) {
+        return !a.changeSet.changes[0].dropView ? 1 : -1
+      }
+
+      // Create table
+      if (a.changeSet.changes[0].createTable) {
+        return !b.changeSet.changes[0].dropTable && !b.changeSet.changes[0].dropView ? -1 : 1
+      }
+
+      if (b.changeSet.changes[0].createTable) {
+        return !a.changeSet.changes[0].dropTable && !a.changeSet.changes[0].dropView ? 1 : -1
+      }
+
+      // Drop Column
+      if (a.changeSet.changes[0].dropColumn) {
+        return !b.changeSet.changes[0].createTable &&
+          !b.changeSet.changes[0].dropTable &&
+          !b.changeSet.changes[0].dropView
+          ? -1
+          : 1
+      }
+
+      if (b.changeSet.changes[0].dropColumn) {
+        return !a.changeSet.changes[0].createTable &&
+          !a.changeSet.changes[0].dropTable &&
+          !a.changeSet.changes[0].dropView
+          ? 1
+          : -1
+      }
+
+      // Add Column
+      if (a.changeSet.changes[0].addColumn) {
+        return !b.changeSet.changes[0].dropColumn &&
+          !b.changeSet.changes[0].createTable &&
+          !b.changeSet.changes[0].dropTable &&
+          !b.changeSet.changes[0].dropView
+          ? -1
+          : 1
+      }
+
+      if (b.changeSet.changes[0].addColumn) {
+        return !a.changeSet.changes[0].dropColumn &&
+          !a.changeSet.changes[0].createTable &&
+          !a.changeSet.changes[0].dropTable &&
+          !a.changeSet.changes[0].dropView
+          ? 1
+          : -1
+      }
+
+      // Add Column
+      if (a.changeSet.changes[0].modifyDataType) {
+        return !b.changeSet.changes[0].addColumn &&
+          !b.changeSet.changes[0].dropColumn &&
+          !b.changeSet.changes[0].createTable &&
+          !b.changeSet.changes[0].dropTable &&
+          !b.changeSet.changes[0].dropView
+          ? -1
+          : 1
+      }
+
+      if (b.changeSet.changes[0].modifyDataType) {
+        return !a.changeSet.changes[0].addColumn &&
+          !a.changeSet.changes[0].dropColumn &&
+          !a.changeSet.changes[0].createTable &&
+          !a.changeSet.changes[0].dropTable &&
+          !a.changeSet.changes[0].dropView
+          ? 1
+          : -1
+      }
+
+      // Create View
+      if (a.changeSet.changes[0].createView && !b.changeSet.changes[0].createView) {
+        return !b.changeSet.changes[0].modifyDataType &&
+          !b.changeSet.changes[0].addColumn &&
+          !b.changeSet.changes[0].dropColumn &&
+          !b.changeSet.changes[0].createTable &&
+          !b.changeSet.changes[0].dropTable &&
+          !b.changeSet.changes[0].dropView
+          ? -1
+          : 1
+      }
+
+      if (b.changeSet.changes[0].createView && !b.changeSet.changes[0].createView) {
+        return !a.changeSet.changes[0].modifyDataType &&
+          !a.changeSet.changes[0].addColumn &&
+          !a.changeSet.changes[0].dropColumn &&
+          !a.changeSet.changes[0].createTable &&
+          !a.changeSet.changes[0].dropTable &&
+          !a.changeSet.changes[0].dropView
+          ? 1
+          : -1
+      }
+
+      // Make sure cascading views work
+      if (a.changeSet.changes[0].createView && b.changeSet.changes[0].createView) {
+        const aRegex = RegExp(`FROM ${a.changeSet.changes[0].createView.viewName}`, 'gm')
+        const bRegex = RegExp(`FROM ${b.changeSet.changes[0].createView.viewName}`, 'gm')
+        if (bRegex.test(a.changeSet.changes[0].createView.selectQuery)) {
           return -1
         }
-        if (b.changeSet.changes[0].createView.selectQuery.contains(a.changeSet.changes[0].createView.viewName)) {
+        if (aRegex.test(b.changeSet.changes[0].createView.selectQuery)) {
           return 1
         }
       }
+
       return 0
     })
   }

@@ -4,7 +4,8 @@
   "description": "Database deployment and migrations for SAP CAP",
   "main": "index.js",
   "scripts": {
-    "test": "run-s test:pg:up jest test:pg:down",
+    "test": "run-s  jest jest:changelog ",
+    "jest:changelog": "for i in {1..10}; do npx jest test/Changelog.test.ts --runInBand --silent || (echo 'Failed after $i attempts' && break); done",
     "jest": "jest --runInBand --silent",
     "test:pg:up-nobg": "docker-compose -f test/app/docker.postgres.yml up",
     "test:pg:up": "docker-compose -f test/app/docker.postgres.yml up -d",
