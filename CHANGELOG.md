@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.18](https://github.com/mikezaschka/cds-dbm/compare/v0.0.17...v0.0.18) (2020-11-27)
+
+
+### Features
+
+* **build:** add startCmd option ([ba3866c](https://github.com/mikezaschka/cds-dbm/commit/ba3866c6d7c254f01f923b223fcbc1c33670f18a))
+* **diff:** let diff output the diff to the console ([163ee14](https://github.com/mikezaschka/cds-dbm/commit/163ee14aa977d49ad43c4f71745058e86b49ac54))
+
+
+### Bug Fixes
+
+* **deploy:** make ordering the changelog more robust ([6694ffb](https://github.com/mikezaschka/cds-dbm/commit/6694ffb05a87779e11213989c6a4f88b4f6bfd0c)), closes [#6](https://github.com/mikezaschka/cds-dbm/issues/6)
+
 ### [0.0.17](https://github.com/mikezaschka/cds-dbm/compare/v0.0.16...v0.0.17) (2020-11-25)
 
 ### Features
