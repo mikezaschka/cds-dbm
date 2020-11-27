@@ -4,15 +4,13 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.17](https://github.com/mikezaschka/cds-dbm/compare/v0.0.16...v0.0.17) (2020-11-25)
 
-
 ### Features
 
-* **build:** add support for deployCmd option and copy over undeploy.json ([5d0f2d3](https://github.com/mikezaschka/cds-dbm/commit/5d0f2d3bd7911bcc457308c9760134148ba3ba49))
-
+- **build:** add support for deployCmd option and copy over undeploy.json ([5d0f2d3](https://github.com/mikezaschka/cds-dbm/commit/5d0f2d3bd7911bcc457308c9760134148ba3ba49))
 
 ### Bug Fixes
 
-* **liquibase:** capture stdout in case of an error ([4e46ec7](https://github.com/mikezaschka/cds-dbm/commit/4e46ec7b25fefde39e56dba1ea0f7ef281f1f305))
+- **liquibase:** capture stdout in case of an error ([4e46ec7](https://github.com/mikezaschka/cds-dbm/commit/4e46ec7b25fefde39e56dba1ea0f7ef281f1f305))
 
 ### [0.0.16](https://github.com/mikezaschka/cds-dbm/compare/v0.0.15...v0.0.16) (2020-11-25)
 

@@ -10,7 +10,7 @@ exports.builder = {
     type: array,
     default: ['db'],
   },
-  "to-file": {
+  'to-file': {
     alias: 'f',
     type: String,
   },
