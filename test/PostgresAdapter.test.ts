@@ -220,7 +220,24 @@ describe('PostgresAdapter', () => {
           }
         }
       })
-      it.todo('should remove columns from tables and views')
+      it('should remove columns from tables and views', async () => {
+        // load an updated model
+        options.service.model = ['./test/app/srv/beershop-service_removeColumns.cds']
+        adapter = await adapterFactory('db', options)
+        await adapter.deploy({})
+
+        const model = await getCompiledSQL('db', options.service.model[0])
+
+        for (let each of model) {
+          const [, table, entity] = each.match(/^\s*CREATE (?:(TABLE)|VIEW)\s+"?([^\s(]+)"?/im) || []
+          if (table) {
+            let cdsColumns = extractTableColumnNamesFromSQL(each)
+            let tableColumns = await extractColumnNamesFromPostgres(options.service.credentials, entity)
+
+            expect(cdsColumns.map((c) => c.toLowerCase()).sort).toEqual(tableColumns.map((c) => c.column_name).sort)
+          }
+        }
+      })
 
       it('should load data when the loadMode is set to delta ', async () => {
         adapter = await adapterFactory('db', options)
