@@ -30,10 +30,10 @@ There are some example apps already using `cds-dbm` in combination with `cds-pg`
 * https://github.com/mikezaschka/cap-devtoberfest
 * https://github.com/gregorwolf/pg-beershop
 
-There are also some blogpost in the SAP Community showcasing the functionlity:
+There are also some blogposts in the SAP Community showcasing the functionality:
 
 * https://blogs.sap.com/2020/11/16/getting-started-with-cap-on-postgresql-node.js/
-* TODO: Add second post when available
+* https://blogs.sap.com/2020/11/30/run-and-deploy-cap-with-postgresql-on-sap-cloud-platform-cloud-foundry-node.js/
 
 The rough plan ahead:
 
