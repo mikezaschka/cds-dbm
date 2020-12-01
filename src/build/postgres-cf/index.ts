@@ -128,7 +128,7 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
     const targetDeployFile = path.join(this.task.dest, 'deploy.sh')
     await this.copy(deployFile).to(targetDeployFile)
     fs.appendFileSync(targetDeployFile, this.task.options.deployCmd)
-    chmodSync(targetDeployFile, '777')
+    chmodSync(targetDeployFile, 0o755)
   }
 
   /**
