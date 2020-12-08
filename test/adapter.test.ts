@@ -28,14 +28,6 @@ describe('Adapter factory', () => {
     }
   })
 
-  it.skip('should create an adapter instance for SQLite', async () => {
-    // Setup SQLite
-    cds.env.requires.db = { kind: 'sql' }
-
-    const adapter = await adapterFactory('db', options)
-    expect(adapter.constructor.name).toEqual('SqliteAdapter')
-  })
-
   it('should create an adapter instance for PostgreSQL', async () => {
     // Setup PostgreSQL
     cds.env.requires.db = { kind: 'postgres' }
