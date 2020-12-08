@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.20](https://github.com/mikezaschka/cds-dbm/compare/v0.0.19...v0.0.20) (2020-12-08)
+
+
+### Features
+
+* remove not supported SQLite adapter ([e0eb17d](https://github.com/mikezaschka/cds-dbm/commit/e0eb17dd1f6430d42d93e665a575192c68bdea51))
+
+
+### Bug Fixes
+
+* handle dropping and creating cascading views ([41cd76a](https://github.com/mikezaschka/cds-dbm/commit/41cd76a0f93f65d0702eef8e2bf67733ff0e0c9e))
+
 ### [0.0.19](https://github.com/mikezaschka/cds-dbm/compare/v0.0.18...v0.0.19) (2020-12-08)
 
 ### [0.0.18](https://github.com/mikezaschka/cds-dbm/compare/v0.0.17...v0.0.18) (2020-11-27)
