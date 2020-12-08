@@ -14,7 +14,6 @@ entity Brewery : cuid {
   beers : Association to many Beers
             on beers.brewery = $self;
 }
-
 entity TypeChecks : cuid {
   type_Boolean     : Boolean;
   type_Int32       : Integer;

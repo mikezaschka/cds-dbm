@@ -2,6 +2,85 @@
   "databaseChangeLog": [
     {
       "changeSet": {
+        "id": "1607446600737-4",
+        "author": "mikezaschka (generated)",
+        "changes": [
+          {
+            "createView": {
+              "fullDefinition": false,
+              "selectQuery": " SELECT brewery_0.id,\n    brewery_0.name AS breweryname,\n    beers_1.name AS beername,\n    1 AS lines\n   FROM (csw_brewery brewery_0\n     LEFT JOIN csw_beers beers_1 ON (((beers_1.brewery_id)::text = (brewery_0.id)::text)));",
+              "viewName": "csw_breweryanalytics"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "1607446600737-6",
+        "author": "mikezaschka (generated)",
+        "changes": [
+          {
+            "createView": {
+              "fullDefinition": false,
+              "selectQuery": " SELECT breweryanalytics_0.id,\n    breweryanalytics_0.breweryname,\n    breweryanalytics_0.beername,\n    breweryanalytics_0.lines\n   FROM csw_breweryanalytics breweryanalytics_0;",
+              "viewName": "beershopservice_breweryanalytics"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "1606506299476-2",
+        "author": "mikezaschka (generated)",
+        "changes": [
+          {
+            "createView": {
+              "fullDefinition": false,
+              "selectQuery": " SELECT brewery_0.id,\n    brewery_0.name\n   FROM csw_brewery brewery_0;",
+              "viewName": "beershopservice_breweries"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "1606511279333-3",
+        "author": "mikezaschka (generated)",
+        "changes": [
+          {
+            "addColumn": {
+              "columns": [
+                {
+                  "column": {
+                    "name": "repository2",
+                    "type": "varchar(5000 BYTE)"
+                  }
+                }
+              ],
+              "tableName": "db_projects"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "1606506298286-2",
+        "author": "mikezaschka (generated)",
+        "changes": [
+          {
+            "dropView": {
+              "viewName": "beershopservice_breweries"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet": {
         "id": "1606506299476-4",
         "author": "mikezaschka (generated)",
         "changes": [
@@ -14,15 +93,42 @@
         ]
       }
     },
-
     {
       "changeSet": {
-        "id": "1606506298286-2",
+        "id": "1606506298286-1",
         "author": "mikezaschka (generated)",
         "changes": [
           {
             "dropView": {
-              "viewName": "beershopservice_breweries"
+              "viewName": "beershopservice_beers"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "1606506299476-1",
+        "author": "mikezaschka (generated)",
+        "changes": [
+          {
+            "createView": {
+              "fullDefinition": false,
+              "selectQuery": " SELECT beers_0.id,\n    beers_0.name,\n    beers_0.abv,\n    beers_0.brewery_id\n   FROM csw_beers beers_0;",
+              "viewName": "beershopservice_beers"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "1606506298286-3",
+        "author": "mikezaschka (generated)",
+        "changes": [
+          {
+            "dropView": {
+              "viewName": "csw_breweryanalytics"
             }
           }
         ]
@@ -58,70 +164,6 @@
     },
     {
       "changeSet": {
-        "id": "1606506299476-1",
-        "author": "mikezaschka (generated)",
-        "changes": [
-          {
-            "createView": {
-              "fullDefinition": false,
-              "selectQuery": " SELECT beers_0.id,\n    beers_0.name,\n    beers_0.abv,\n    beers_0.brewery_id\n   FROM csw_beers beers_0;",
-              "viewName": "beershopservice_beers"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "changeSet": {
-        "id": "1606506299476-2",
-        "author": "mikezaschka (generated)",
-        "changes": [
-          {
-            "createView": {
-              "fullDefinition": false,
-              "selectQuery": " SELECT brewery_0.id,\n    brewery_0.name\n   FROM csw_brewery brewery_0;",
-              "viewName": "beershopservice_breweries"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "changeSet": {
-        "id": "1606506298286-1",
-        "author": "mikezaschka (generated)",
-        "changes": [
-          {
-            "dropView": {
-              "viewName": "beershopservice_beers"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "changeSet": {
-        "id": "1606511279333-3",
-        "author": "mikezaschka (generated)",
-        "changes": [
-          {
-            "addColumn": {
-              "columns": [
-                {
-                  "column": {
-                    "name": "repository2",
-                    "type": "varchar(5000 BYTE)"
-                  }
-                }
-              ],
-              "tableName": "db_projects"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "changeSet": {
         "id": "1606506299476-3",
         "author": "mikezaschka (generated)",
         "changes": [
@@ -130,6 +172,19 @@
               "fullDefinition": false,
               "selectQuery": " SELECT typechecks_0.id,\n    typechecks_0.type_boolean,\n    typechecks_0.type_int32,\n    typechecks_0.type_int64,\n    typechecks_0.type_decimal,\n    typechecks_0.type_double,\n    typechecks_0.type_date,\n    typechecks_0.type_time,\n    typechecks_0.type_datetime,\n    typechecks_0.type_timestamp,\n    typechecks_0.type_string,\n    typechecks_0.type_binary,\n    typechecks_0.type_largebinary,\n    typechecks_0.type_largestring\n   FROM csw_typechecks typechecks_0;",
               "viewName": "beershopservice_typechecks"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "1606506298286-3",
+        "author": "mikezaschka (generated)",
+        "changes": [
+          {
+            "dropView": {
+              "viewName": "beershopservice_breweryanalytics"
             }
           }
         ]

@@ -9,12 +9,7 @@ import { configOptions, liquibaseOptions } from './../config'
 import { ChangeLog } from '../ChangeLog'
 import { sortByCasadingViews } from '../util'
 import { DataLoader } from '../DataLoader'
-
-interface DeployOptions {
-  dryRun?: boolean
-  loadMode?: string
-  autoUndeploy?: boolean
-}
+import { ViewDefinition } from '../types/AdapterTypes'
 
 /**
  * Base class that contains all the shared stuff.
@@ -84,6 +79,8 @@ export abstract class BaseAdapter {
    * @abstract
    */
   abstract liquibaseOptionsFor(cmd: string): liquibaseOptions
+
+  abstract getViewDefinition(viewName: string): Promise<ViewDefinition>
 
   /*
    * Hooks
@@ -234,7 +231,22 @@ export abstract class BaseAdapter {
       diffChangeLog.removeDropTableStatements()
     }
     diffChangeLog.addDropStatementsForUndeployEntities(this.options.migrations.deploy.undeployFile)
-    diffChangeLog.reorderChangelog()
+
+    const viewDefinitions = {}
+    for (const changeLog of diffChangeLog.data.databaseChangeLog) {
+      if (changeLog.changeSet.changes[0].dropView) {
+        const viewName = changeLog.changeSet.changes[0].dropView.viewName
+        viewDefinitions[viewName] = await this.getViewDefinition(viewName)
+      }
+      if (changeLog.changeSet.changes[0].createView) {
+        const viewName = changeLog.changeSet.changes[0].createView.viewName
+        viewDefinitions[viewName] = {
+          name: viewName,
+          definition: changeLog.changeSet.changes[0].createView.selectQuery,
+        }
+      }
+    }
+    diffChangeLog.reorderChangelog(viewDefinitions)
 
     // Call hooks
     this.beforeDeploy(diffChangeLog)

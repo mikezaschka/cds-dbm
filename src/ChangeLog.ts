@@ -32,14 +32,50 @@ export class ChangeLog {
    *
    * @param {string} changelog
    */
-  public reorderChangelog() {
+  public reorderChangelog(viewDefinitions = {}) {
     this.data.databaseChangeLog.sort((a: any, b: any) => {
       // Drop view
-      if (a.changeSet.changes[0].dropView) {
+      if (a.changeSet.changes[0].dropView && !b.changeSet.changes[0].dropView) {
         return -1
       }
-      if (b.changeSet.changes[0].dropView) {
+      if (b.changeSet.changes[0].dropView && !a.changeSet.changes[0].dropView) {
         return 1
+      }
+
+      // Make sure cascading views work
+      if (a.changeSet.changes[0].dropView && b.changeSet.changes[0].dropView) {
+        const aViewName = a.changeSet.changes[0].dropView.viewName
+        const bViewName = b.changeSet.changes[0].dropView.viewName
+
+        const aRegex = RegExp(`FROM ${aViewName}|JOIN ${aViewName}`, 'gm')
+        const bRegex = RegExp(`FROM ${bViewName}|JOIN ${bViewName}`, 'gm')
+
+        // Does b directly depend on a
+        if (bRegex.test(viewDefinitions[aViewName].definition)) {
+          return -1
+        }
+
+        // Does a directly depend on b
+        if (aRegex.test(viewDefinitions[bViewName].definition)) {
+          return 1
+        }
+
+        // Does a depend on any other view
+        for (const key in viewDefinitions) {
+          if (aRegex.test(viewDefinitions[key].definition)) {
+            return 1
+          }
+        }
+
+        // Does b depend on any other view
+        for (const key in viewDefinitions) {
+          if (bRegex.test(viewDefinitions[key].definition)) {
+            return -1
+          }
+        }
+
+        // Nothing? Then order by name
+        return aViewName > bViewName ? -1 : 1
       }
 
       // Drop table
@@ -96,7 +132,7 @@ export class ChangeLog {
           : -1
       }
 
-      // Add Column
+      // Modify data type
       if (a.changeSet.changes[0].modifyDataType) {
         return !b.changeSet.changes[0].addColumn &&
           !b.changeSet.changes[0].dropColumn &&
@@ -142,14 +178,35 @@ export class ChangeLog {
 
       // Make sure cascading views work
       if (a.changeSet.changes[0].createView && b.changeSet.changes[0].createView) {
-        const aRegex = RegExp(`FROM ${a.changeSet.changes[0].createView.viewName}`, 'gm')
-        const bRegex = RegExp(`FROM ${b.changeSet.changes[0].createView.viewName}`, 'gm')
+        const aViewName = a.changeSet.changes[0].createView.viewName
+        const bViewName = b.changeSet.changes[0].createView.viewName
+
+        const aRegex = RegExp(`FROM ${aViewName}|JOIN ${aViewName}`, 'gm')
+        const bRegex = RegExp(`FROM ${bViewName}|JOIN ${bViewName}`, 'gm')
+
         if (bRegex.test(a.changeSet.changes[0].createView.selectQuery)) {
-          return -1
-        }
-        if (aRegex.test(b.changeSet.changes[0].createView.selectQuery)) {
           return 1
         }
+        if (aRegex.test(b.changeSet.changes[0].createView.selectQuery)) {
+          return -1
+        }
+
+        // Does a depend on any other view
+        for (const key in viewDefinitions) {
+          if (aRegex.test(viewDefinitions[key].definition)) {
+            return -1
+          }
+        }
+
+        // Does b depend on any other view
+        for (const key in viewDefinitions) {
+          if (bRegex.test(viewDefinitions[key].definition)) {
+            return 1
+          }
+        }
+
+        // Nothing? Then order by name
+        return aViewName > bViewName ? -1 : 1
       }
 
       return 0

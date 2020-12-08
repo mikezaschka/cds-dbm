@@ -7,6 +7,7 @@ import { BaseAdapter } from './BaseAdapter'
 import { liquibaseOptions } from './../config'
 import { PostgresDatabase } from './../types/PostgresDatabase'
 import { ChangeLog } from '../ChangeLog'
+import { ViewDefinition } from '../types/AdapterTypes'
 
 const getCredentialsForClient = (credentials) => {
   if (typeof credentials.username !== 'undefined') {
@@ -35,6 +36,26 @@ const getCredentialsForClient = (credentials) => {
 }
 
 export class PostgresAdapter extends BaseAdapter {
+  async getViewDefinition(viewName: string): Promise<ViewDefinition> {
+    const credentials = this.options.service.credentials
+    const client = new Client(getCredentialsForClient(credentials))
+    await client.connect()
+    const {
+      rows,
+    } = await client.query(
+      `SELECT table_name, view_definition FROM information_schema.views WHERE table_schema = 'public' AND table_name = $1 ORDER BY table_name;`,
+      [viewName]
+    )
+    await client.end()
+
+    const viewDefinition: ViewDefinition = {
+      name: viewName,
+      definition: rows[0]?.view_definition?.replace(/public./g, ''),
+    }
+
+    return viewDefinition
+  }
+
   /**
    * @override
    * @param changelog

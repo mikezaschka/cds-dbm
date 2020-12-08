@@ -24,16 +24,16 @@ Nevertheless it may be suitable to use the <a href="https://github.com/liquibase
 
 ## Current status
 
-This is a functional version, but should not yet  be used in production environments.
+This is a functional version, but should not yet be used in production environments.
 There are some example apps already using `cds-dbm` in combination with `cds-pg`:
 
-* https://github.com/mikezaschka/cap-devtoberfest
-* https://github.com/gregorwolf/pg-beershop
+- https://github.com/mikezaschka/cap-devtoberfest
+- https://github.com/gregorwolf/pg-beershop
 
 There are also some blogposts in the SAP Community showcasing the functionality:
 
-* https://blogs.sap.com/2020/11/16/getting-started-with-cap-on-postgresql-node.js/
-* https://blogs.sap.com/2020/11/30/run-and-deploy-cap-with-postgresql-on-sap-cloud-platform-cloud-foundry-node.js/
+- https://blogs.sap.com/2020/11/16/getting-started-with-cap-on-postgresql-node.js/
+- https://blogs.sap.com/2020/11/30/run-and-deploy-cap-with-postgresql-on-sap-cloud-platform-cloud-foundry-node.js/
 
 The rough plan ahead:
 
@@ -222,7 +222,7 @@ cds-dbm drop --all
 
 #### `diff`
 
-Generates a descriptive text containing all the differences between the defined cds model and the current status of the database. By default, the information will be logged to the console. 
+Generates a descriptive text containing all the differences between the defined cds model and the current status of the database. By default, the information will be logged to the console.
 
 **Usage**
 
@@ -248,6 +248,7 @@ Executes the defined cds build tasks, either in a .cdsrc or in the package json.
 TODO: Insert link to SAP Community blogpost, when available
 
 Example configuration:
+
 ```json
 "build": {
       "tasks": [

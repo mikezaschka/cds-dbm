@@ -31,6 +31,17 @@ async function getTableNamesFromPostgres(credentials) {
   return rows
 }
 
+async function getViewNamesFromPostgres(credentials) {
+  const client = new Client(getCredentialsForClient(credentials))
+  await client.connect()
+  const { rows } = await client.query(
+    `SELECT table_name FROM information_schema.views WHERE table_schema = 'public' ORDER BY table_name;`
+  )
+  await client.end()
+
+  return rows
+}
+
 const extractColumnNamesFromPostgres = async (credentials, table) => {
   const client = new Client(getCredentialsForClient(credentials))
   await client.connect()
@@ -123,6 +134,7 @@ async function dropDatabase(credentials) {
 export {
   extractColumnNamesFromPostgres,
   getTableNamesFromPostgres,
+  getViewNamesFromPostgres,
   getCompiledSQL,
   getEntityNamesFromCds,
   extractTableColumnNamesFromSQL,

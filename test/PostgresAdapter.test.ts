@@ -9,7 +9,7 @@ import {
   getCompiledSQL,
   extractTableColumnNamesFromSQL,
   getEntityNamesFromCds,
-  extractViewColumnNames,
+  getViewNamesFromPostgres,
   dropDatabase,
   extractColumnNamesFromPostgres,
 } from './util/postgreshelper'
@@ -156,6 +156,41 @@ describe('PostgresAdapter', () => {
         }
       })
 
+      it('should add cascading views', async () => {
+        // load an updated model
+        options.service.model = ['./test/app/srv/beershop-service_viewsOnViews.cds']
+        adapter = await adapterFactory('db', options)
+        await adapter.deploy({})
+
+        const existingViewsInPostgres = await getViewNamesFromPostgres(options.service.credentials)
+        const tableAndViewNamesFromCds = await getEntityNamesFromCds('db', options.service.model[0])
+
+        for (const entity of tableAndViewNamesFromCds) {
+          if (entity.isTable) {
+            continue
+          }
+          expect(existingViewsInPostgres.map((i) => i.table_name)).toContain(entity.name.toLowerCase())
+        }
+      })
+
+      it('should redeploy cascading views', async () => {
+        // load an updated model
+        options.service.model = ['./test/app/srv/beershop-service_viewsOnViews.cds']
+        adapter = await adapterFactory('db', options)
+        await adapter.deploy({})
+        await adapter.deploy({})
+
+        const existingViewsInPostgres = await getViewNamesFromPostgres(options.service.credentials)
+        const tableAndViewNamesFromCds = await getEntityNamesFromCds('db', options.service.model[0])
+
+        for (const entity of tableAndViewNamesFromCds) {
+          if (entity.isTable) {
+            continue
+          }
+          expect(existingViewsInPostgres.map((i) => i.table_name)).toContain(entity.name.toLowerCase())
+        }
+      })
+
       it('should not remove tables with autoUndeploy set to false', async () => {
         // load an updated model
         options.service.model = ['./test/app/srv/beershop-service_removeTables.cds']
@@ -200,8 +235,6 @@ describe('PostgresAdapter', () => {
         expect(existingTablesInPostgres.map((i) => i.table_name)).not.toContain('csw_beers')
         expect(existingTablesInPostgres.map((i) => i.table_name)).not.toContain('csw_brewery')
       })
-
-      it('should add cascading views', async () => {})
       it('should add columns to tables and views', async () => {
         // load an updated model
         options.service.model = ['./test/app/srv/beershop-service_addColumns.cds']
