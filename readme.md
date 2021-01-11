@@ -1,16 +1,35 @@
-# cds-dbm
+# cds-dbm (Core Data Services – Database Migrations)
 
-_cds-dbm_ is a node package that adds **automated delta deployment** and (as a planned, but not yet integrated feature) **full database migration support** to the Node.js Service SDK (<a href="https://www.npmjs.com/package/@sap/cds">@sap/cds</a>) of the <a href="https://cap.cloud.sap/docs/about/">**SAP Cloud Application Programming Model**</a>.
+_cds-dbm_ is a package that extends the database tooling capabilities of the <a href="https://cap.cloud.sap/docs/about/">**SAP Cloud Application Programming Model's**</a> Node.js Service SDK (<a href="https://www.npmjs.com/package/@sap/cds">@sap/cds</a>) for databases other than the native supported ones (SAP HANA and SQLite).
 
-The library offers two ways of handling database deployments:<br>
-You can either use automated delta deployments of the current cds data model that are in line with the default development workflow in cap projects. For more complex applications and scenarios, there will also be integrated support of a full fledged database migration concept.
-<br> For both scenarios _cds-dbm_ is relying on the popular Java framework <a href="https://www.liquibase.org/">liquibase</a> to handle (most) of the database activities.
+The library offers a set of command line tasks related to deploying a cds data model to the database:
 
-Currently _cds-dbm_ offers support for the following databases:
+- [deploy](#command_deploy)
+- [load](#command_load)
+- [diff](#command_diff)
+- [drop](#command_drop)
 
-- PostgreSQL (<a href="https://github.com/sapmentors/cds-pg">cds-pg</a>)
+It also contains a task to create ready-to-deploy build fragments for SAP Cloud Platform Cloud Foundry:
+- [build](#command_build)
+
+## Database support
+
+Internally _cds-dbm_ is relying on the popular Java framework <a href="https://www.liquibase.org/">liquibase</a> to handle (most) of the database activities. Liquibase by default has support for a variety of relational databases, but currently _cds-dbm_ offers support for the following ones:
+
+- PostgreSQL (in combination with the <a href="https://github.com/sapmentors/cds-pg">cds-pg</a> database adapter)
 
 Support for other databases is planned whenever a corresponding cds adapter library is available.
+
+There are some example apps already using `cds-dbm` in combination with `cds-pg`:
+
+- https://github.com/mikezaschka/cap-devtoberfest
+- https://github.com/gregorwolf/pg-beershop
+
+There are also some blogposts in the SAP Community showcasing the functionality of `cds-dbm`:
+
+- https://blogs.sap.com/2020/11/16/getting-started-with-cap-on-postgresql-node.js/
+- https://blogs.sap.com/2020/11/30/run-and-deploy-cap-with-postgresql-on-sap-cloud-platform-cloud-foundry-node.js/
+
 
 <details><summary>Why does <i>cds-dbm</i> (currently) not support SAP HANA?</summary>
 <p>
@@ -21,41 +40,9 @@ Nevertheless it may be suitable to use the <a href="https://github.com/liquibase
 
 </p>
 </details>
+<br>
 
-## Current status
-
-This is a functional version, but should not yet be used in production environments.
-There are some example apps already using `cds-dbm` in combination with `cds-pg`:
-
-- https://github.com/mikezaschka/cap-devtoberfest
-- https://github.com/gregorwolf/pg-beershop
-
-There are also some blogposts in the SAP Community showcasing the functionality:
-
-- https://blogs.sap.com/2020/11/16/getting-started-with-cap-on-postgresql-node.js/
-- https://blogs.sap.com/2020/11/30/run-and-deploy-cap-with-postgresql-on-sap-cloud-platform-cloud-foundry-node.js/
-
-The rough plan ahead:
-
-**Basic features**
-
-- [x] add automated deployment model
-- [x] add support for auto-undeployment (implicit drop)
-- [x] add support for updeployment files (explicit drop)
-- [x] add data import of csv files
-- [x] add `build` task for SCP CF deployment
-
-**Advanced features**
-
-- [ ] add support for multitenancy
-- [ ] add advanced deployment model including migrations
-
-**Database support**
-
-- [x] add PostgresSQL adapter (<a href="https://github.com/sapmentors/cds-pg">cds-pg</a>)
-- ~~[ ] verify and maybe add support for SQLite~~
-
-Contributions are welcome. Details on how to contribute will be added soon.
+# How to use
 
 ## Prerequisites
 
@@ -69,28 +56,10 @@ Simply add this package to your [CAP](https://cap.cloud.sap/docs/) project by ru
 npm install cds-dbm
 ```
 
----
 
-## Automated delta deployments
+`cds-dbm` requires some additional configuration added to your _package.json_:
 
-> TODO: Add full description
-
-In the meantime some notes on the delta processing:
-
-1. clone current db schema `cds.migrations.db.schema.default` into `cds.migrations.db.schema.clone`
-2. drop all cds based views from clone schema because updates on views do not work in the way liquibase is handling this via `CREATE OR REPLACE VIEW`
-   (https://liquibase.jira.com/browse/CORE-2377)
-3. deploy the full cds model to the reference schema `cds.migrations.db.schema.reference`
-4. let liquibase create a diff between the clone and reference schema (including the recreation of the dropped views)
-5. do some adjustments on the changelog (handle undeployment stuff, fix order of things)
-6. finally deploy changelog to current schema
-7. load data from csv files (if requested)
-
-### Usage with cds-pg (PostgreSQL)
-
-_cds-dbm_ requires some additional configuration added to your package.json:
-
-```JSON
+```JavaScript
   "cds": {
     //...
     "migrations": {
@@ -108,6 +77,30 @@ _cds-dbm_ requires some additional configuration added to your package.json:
     }
   }
 ```
+
+---
+
+Internally `cds-dbm` uses 3 different schemas during deployment:
+
+- _default_ – The schema containing your currently deployed and thus running schema
+- _clone_ – A schema that will be a clone of the _default_ schema during deployment
+- _reference_ – The schema that will contain the cds model 
+
+## Automated delta deployments
+
+> TODO: Add full description
+
+In the meantime some notes on the delta processing:
+
+1. clone current db schema `cds.migrations.db.schema.default` into `cds.migrations.db.schema.clone`
+2. drop all cds based views from clone schema because updates on views do not work in the way liquibase is handling this via `CREATE OR REPLACE VIEW`
+   (https://liquibase.jira.com/browse/CORE-2377)
+3. deploy the full cds model to the reference schema `cds.migrations.db.schema.reference`
+4. let liquibase create a diff between the clone and reference schema (including the recreation of the dropped views)
+5. do some adjustments on the changelog (handle undeployment stuff, fix order of things)
+6. finally deploy changelog to current schema
+7. load data from csv files (if requested)
+
 
 ### Dropping tables/views
 
@@ -147,6 +140,7 @@ The following commands exists for working the _cds-dbm_ in the automated delta d
 npx cds-dbm <task>
 ```
 
+<a name="command_deploy"></a>
 #### `deploy`
 
 Performs a delta deployment of the current cds data model to the database. By default no csv files are loaded. If this is required, the load strategy has to be defined (`load-via`).
@@ -174,6 +168,7 @@ cds-dbm deploy --auto-undeploy
 cds-dbm deploy --auto-undeploy --dry
 ```
 
+<a name="command_load"></a>
 #### `load`
 
 Loads data from CSV files into the database.
@@ -199,6 +194,7 @@ cds-dbm load --via delta
 
 - `via` (_string_) - Can be either `full` (truncate and insert) or `delta` (check for existing records, then update or insert)
 
+<a name="command_drop"></a>
 #### `drop`
 
 Drops all tables and views in your data model from the database. If the `all` parameter is given, then everything in the whole schema will be dropped, not only the cds specific entities.
@@ -220,6 +216,7 @@ cds-dbm drop
 cds-dbm drop --all
 ```
 
+<a name="command_diff"></a>
 #### `diff`
 
 Generates a descriptive text containing all the differences between the defined cds model and the current status of the database. By default, the information will be logged to the console.
@@ -241,6 +238,7 @@ cds-dbm diff
 cds-dbm diff --to-file db/diff.txt
 ```
 
+<a name="command_build"></a>
 #### `build`
 
 Executes the defined cds build tasks, either in a .cdsrc or in the package json. `cds-dbm` comes with a pre-baked build task, to deploy the data model to a PostgreSQL database on SAP Cloud Platform.
