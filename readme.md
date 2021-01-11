@@ -1,6 +1,6 @@
 # cds-dbm (Core Data Services – Database Migrations)
 
-_cds-dbm_ is a package that extends the database tooling capabilities of the <a href="https://cap.cloud.sap/docs/about/">**SAP Cloud Application Programming Model's**</a> Node.js Service SDK (<a href="https://www.npmjs.com/package/@sap/cds">@sap/cds</a>) for databases other than the native supported ones (SAP HANA and SQLite).
+_cds-dbm_ is a package that extends the database tooling capabilities of the <a href="https://cap.cloud.sap/docs/about/">**SAP Cloud Application Programming Model's**</a> Node.js Service SDK (<a href="https://www.npmjs.com/package/@sap/cds">@sap/cds</a>) for relational databases other than the native supported ones (SAP HANA and SQLite).
 
 The library offers a set of command line tasks related to deploying a cds data model to the database:
 
@@ -243,8 +243,6 @@ cds-dbm diff --to-file db/diff.txt
 
 Executes the defined cds build tasks, either in a .cdsrc or in the package json. `cds-dbm` comes with a pre-baked build task, to deploy the data model to a PostgreSQL database on SAP Cloud Platform.
 
-TODO: Insert link to SAP Community blogpost, when available
-
 Example configuration:
 
 ```json
@@ -270,13 +268,6 @@ Example configuration:
 ```bash
 cds-dbm build
 ```
-
----
-
-## Versioned database development using migrations
-
-_Not yet implemented_
-
 ## Sponsors
 
 Thank you to **p36 (https://p36.io/)** for sponsoring this project.
