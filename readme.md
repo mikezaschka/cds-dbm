@@ -12,6 +12,11 @@ The library offers a set of command line tasks related to deploying a cds data m
 It also contains a task to create ready-to-deploy build fragments for SAP Cloud Platform Cloud Foundry:
 - [build](#command_build)
 
+## Current status
+
+_cds-dbm_ is ready to be used!<br>
+The library contains all the necessary commands and functionality to build a cds model for and deploy it to the supported databases.
+
 ## Database support
 
 Internally _cds-dbm_ is relying on the popular Java framework <a href="https://www.liquibase.org/">liquibase</a> to handle (most) of the database activities. Liquibase by default has support for a variety of relational databases, but currently _cds-dbm_ offers support for the following ones:
