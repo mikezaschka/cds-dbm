@@ -1,6 +1,6 @@
-# cds-dbm (Core Data Services – Database Migrations)
+# `cds-dbm` (Core Data Services – Database Migrations)
 
-_cds-dbm_ is a package that extends the database tooling capabilities of the <a href="https://cap.cloud.sap/docs/about/">**SAP Cloud Application Programming Model's**</a> Node.js Service SDK (<a href="https://www.npmjs.com/package/@sap/cds">@sap/cds</a>) for relational databases other than the native supported ones (SAP HANA and SQLite).
+`cds-dbm` is a package that extends the database tooling capabilities of the <a href="https://cap.cloud.sap/docs/about/">**SAP Cloud Application Programming Model's**</a> Node.js Service SDK (<a href="https://www.npmjs.com/package/@sap/cds">@sap/cds</a>) for relational databases other than the native supported ones (SAP HANA and SQLite).
 
 The library offers a set of command line tasks related to deploying a cds data model to the database:
 
@@ -9,21 +9,21 @@ The library offers a set of command line tasks related to deploying a cds data m
 - [diff](#command_diff)
 - [drop](#command_drop)
 
-It also contains a task to create ready-to-deploy build fragments for SAP Cloud Platform Cloud Foundry:
+It also contains a task to create ready-to-deploy build fragments for SAP Business Technology Platform (BTP) Cloud Foundry:
 - [build](#command_build)
 
 ## Current status
 
-_cds-dbm_ is ready to be used!<br>
+`cds-dbm` is ready to be used!<br>
 The library contains all the necessary commands and functionality to build a cds model for and deploy it to the supported databases.
 
 ## Database support
 
-Internally _cds-dbm_ is relying on the popular Java framework <a href="https://www.liquibase.org/">liquibase</a> to handle (most) of the database activities. Liquibase by default has support for a variety of relational databases, but currently _cds-dbm_ offers support for the following ones:
+Internally `cds-dbm` is relying on the popular Java framework <a href="https://www.liquibase.org/">liquibase</a> to handle (most) of the database activities. Liquibase by default has support for a variety of relational databases, but currently `cds-dbm` offers support for the following ones:
 
-- PostgreSQL (in combination with the <a href="https://github.com/sapmentors/cds-pg">cds-pg</a> database adapter)
+- PostgreSQL (in combination with the <a href="https://github.com/sapmentors/cds-pg">`cds-pg`</a> database adapter)
 
-Support for other databases is planned whenever a corresponding cds adapter library is available.
+Support for other databases is planned whenever a corresponding CDS adapter library is available.
 
 There are some example apps already using `cds-dbm` in combination with `cds-pg`:
 
@@ -39,7 +39,7 @@ There are also some blogposts in the SAP Community showcasing the functionality 
 <details><summary>Why does <i>cds-dbm</i> (currently) not support SAP HANA?</summary>
 <p>
 
-As SAP HANA is a first class citizen in CAP, SAP offers its own deployment solution (<a href="https://www.npmjs.com/package/@sap/hdi-deploy">@sap/hdi-deploy</a>). With CAP it is possible to directly compile a data model into SAP HANA fragments (.hdbtable, etc.), which can then be deployed by the hdi-deploy module taking care of all the important stuff (delta handling, hdi-management on XSA or SAP Cloud Platform, etc.).
+As SAP HANA is a first class citizen in CAP, SAP offers its own deployment solution (<a href="https://www.npmjs.com/package/@sap/hdi-deploy">@sap/hdi-deploy</a>). With CAP it is possible to directly compile a data model into SAP HANA fragments (.hdbtable, etc.), which can then be deployed by the hdi-deploy module taking care of all the important stuff (delta handling, hdi-management on XSA or SAP BTP, etc.).
 <br>
 Nevertheless it may be suitable to use the <a href="https://github.com/liquibase/liquibase-hanadb">liquibase-hanadb</a> adapter to add an alternative deployment solution. If so, support might be added in the future.
 
@@ -62,7 +62,7 @@ npm install cds-dbm
 ```
 
 
-`cds-dbm` requires some additional configuration added to your _package.json_:
+`cds-dbm` requires some additional configuration added to your `package.json`:
 
 ```JavaScript
   "cds": {
@@ -89,7 +89,7 @@ Internally `cds-dbm` uses 3 different schemas during deployment:
 
 - _default_ – The schema containing your currently deployed and thus running schema
 - _clone_ – A schema that will be a clone of the _default_ schema during deployment
-- _reference_ – The schema that will contain the cds model 
+- _reference_ – The schema that will contain the CDS model 
 
 ## Automated delta deployments
 
@@ -97,27 +97,27 @@ Internally `cds-dbm` uses 3 different schemas during deployment:
 
 In the meantime some notes on the delta processing:
 
-1. clone current db schema `cds.migrations.db.schema.default` into `cds.migrations.db.schema.clone`
-2. drop all cds based views from clone schema because updates on views do not work in the way liquibase is handling this via `CREATE OR REPLACE VIEW`
-   (https://liquibase.jira.com/browse/CORE-2377)
-3. deploy the full cds model to the reference schema `cds.migrations.db.schema.reference`
-4. let liquibase create a diff between the clone and reference schema (including the recreation of the dropped views)
-5. do some adjustments on the changelog (handle undeployment stuff, fix order of things)
-6. finally deploy changelog to current schema
-7. load data from csv files (if requested)
+1. Clone current db schema `cds.migrations.db.schema.default` into `cds.migrations.db.schema.clone`.
+2. Drop all CDS based views from clone schema because updates on views do not work in the way liquibase is handling this via `CREATE OR REPLACE VIEW`
+   (https://liquibase.jira.com/browse/CORE-2377).
+3. Deploy the full CDS model to the reference schema `cds.migrations.db.schema.reference`.
+4. Let liquibase create a diff between the clone and reference schema (including the recreation of the dropped views).
+5. Do some adjustments on the changelog (handle undeployment stuff, fix order of things).
+6. Finally deploy changelog to current schema.
+7. Load data from .csv files (if requested).
 
 
 ### Dropping tables/views
 
-cds-dbm follows a safe approach and does not drop any database tables during deployment. Thus, old tables will still be around even if they are not part of your data model anymore.
+`cds-dbm` follows a safe approach and does not drop any database tables during deployment. Thus, old tables will still be around even if they are not part of your data model anymore.
 
-You can either remove them manually or rely on _cds-dbm_ to handle this for you.
+You can either remove them manually or rely on `cds-dbm` to handle this for you.
 
 **Undeployment file**
 
 An undeployment file makes it possible to specifically list views and tables that should be dropped from the database schema during the deployment.
 
-The undeployment file's path needs to be specified in the `package.json` configuration (`cds.migrations.deploy.undeployFile`)
+The undeployment file's path needs to be specified in the `package.json` configuration (`cds.migrations.deploy.undeployFile`):
 
 ```json
 # An example undeploy.json:
@@ -133,11 +133,11 @@ The undeployment file's path needs to be specified in the `package.json` configu
 
 **auto-undeployment option**
 
-While an `undeploy.json` file gives you fine grained control, it is also possible to automatically remove tables/views from the database schema. When using the `auto-undeploy` flag during deployment, _cds-dbm_ will take the cds model as the reference and remove all other existing tables/views.
+While an `undeploy.json` file gives you fine grained control, it is also possible to automatically remove tables/views from the database schema. When using the `auto-undeploy` flag during deployment, `cds-dbm` will take the cds model as the reference and remove all other existing tables/views.
 
 ### Commands
 
-The following commands exists for working the _cds-dbm_ in the automated delta deployment mode:
+The following commands exists for working the `cds-dbm` in the automated delta deployment mode:
 
 **Currently tall tasks must be called with npx**
 
@@ -246,7 +246,7 @@ cds-dbm diff --to-file db/diff.txt
 <a name="command_build"></a>
 #### `build`
 
-Executes the defined cds build tasks, either in a .cdsrc or in the package json. `cds-dbm` comes with a pre-baked build task, to deploy the data model to a PostgreSQL database on SAP Cloud Platform.
+Executes the defined cds build tasks, either in a .cdsrc or in the package json. `cds-dbm` comes with a pre-baked build task, to deploy the data model to a PostgreSQL database on SAP BTP.
 
 Example configuration:
 
