@@ -156,7 +156,7 @@ describe('PostgresAdapter', () => {
         }
       })
 
-      it('should add cascading views', async () => {
+      it.skip('should add cascading views', async () => {
         // load an updated model
         options.service.model = ['./test/app/srv/beershop-service_viewsOnViews.cds']
         adapter = await adapterFactory('db', options)
@@ -173,7 +173,7 @@ describe('PostgresAdapter', () => {
         }
       })
 
-      it('should redeploy cascading views', async () => {
+      it.skip('should redeploy cascading views', async () => {
         // load an updated model
         options.service.model = ['./test/app/srv/beershop-service_viewsOnViews.cds']
         adapter = await adapterFactory('db', options)
