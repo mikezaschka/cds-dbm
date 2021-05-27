@@ -1,10 +1,9 @@
 import * as cdsg from '@sap/cds'
 import { BaseAdapter } from './adapter/BaseAdapter'
 const cds = cdsg as any
-const { path, isdir, isfile } = cds.utils
+const { fs, path, isdir, read } = cds.utils
 const { promisify } = require('util')
-const readdir = promisify(cds.utils.readdir)
-const read = promisify(cds.utils.read)
+const { readdir } = fs.promises
 
 // TS: Fix UPDATE issue
 declare const UPDATE: any
@@ -34,9 +33,9 @@ export class DataLoader {
    * @param locations
    */
   async loadFrom(locations) {
-    if (!this.adapter.cdsModel._sources) return
+    if (!this.adapter.cdsModel.$sources) return
     const folders = new Set()
-    for (let model of this.adapter.cdsModel._sources) {
+    for (let model of this.adapter.cdsModel.$sources) {
       for (let data of locations) {
         for (let each of [model + data, model + '/../' + data]) {
           let folder = path.resolve(each)
