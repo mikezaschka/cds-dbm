@@ -4,7 +4,7 @@ const cds = cdsg as any
 const { path, isdir, isfile } = cds.utils
 const { promisify } = require('util')
 const readdir = promisify(cds.utils.readdir)
-const read = promisify(cds.utils.readFile)
+const read = promisify(cds.utils.read)
 
 // TS: Fix UPDATE issue
 declare const UPDATE: any

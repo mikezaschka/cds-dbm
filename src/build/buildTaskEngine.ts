@@ -1,4 +1,4 @@
-const BuildTaskEngine = require('@sap/cds/lib/build/buildTaskEngine')
+const BuildTaskEngine = require('@sap/cds/bin/build/buildTaskEngine')
 const dbmBuildTaskHandlerFactory = require('./buildTaskHandlerFactory')
 
 class CdmBuildTaskEngine extends BuildTaskEngine {

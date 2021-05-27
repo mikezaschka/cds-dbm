@@ -2,10 +2,10 @@ import foss from '@sap/cds-foss'
 const fs = foss('fs-extra')
 import { chmodSync, existsSync } from 'fs'
 import path from 'path'
-const BuildTaskHandlerOData = require('@sap/cds/lib/build/buildTaskHandlerOData')
-const { BuildMessage, BuildError } = require('@sap/cds/lib/build/util')
-const { getHanaDbModuleDescriptor } = require('@sap/cds/lib/build/mtaUtil')
-const { FOLDER_GEN, FILE_EXT_CDS } = require('@sap/cds/lib/build/constants')
+const NodeCfModuleBuilder = require('@sap/cds/bin/build/node-cf')
+const { BuildMessage, BuildError } = require('@sap/cds/bin/build/util')
+const { getHanaDbModuleDescriptor } = require('@sap/cds/bin/build/mtaUtil')
+const { FOLDER_GEN, FILE_EXT_CDS } = require('@sap/cds/bin/build/constants')
 
 const DEBUG = process.env.DEBUG
 const FILE_NAME_MANIFEST_YML = 'manifest.yml'
@@ -14,12 +14,15 @@ const FILE_EXT_CSV = '.csv'
 const FILE_NAME_PACKAGE_JSON = 'package.json'
 const DEPLOY_CMD = 'npx cds-dbm deploy --load-via delta'
 
-class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
+class PostgresCfModuleBuilder extends NodeCfModuleBuilder {
+
+  /**
+   * 
+   * @param task 
+   * @param buildOptions 
+   */
   constructor(task, buildOptions) {
     super('PostgreSQL CF Module Builder', task, buildOptions)
-    this._result = {
-      dest: this.task.dest,
-    }
   }
 
   init() {
@@ -46,7 +49,7 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
       this.logger.log(`[cds] - model: ${this.stripProjectPaths(modelPaths).join(', ')}`)
     }
 
-    const model = await this.loadModel(modelPaths)
+    const model = await this.model(modelPaths)
     const extCsn = this.cds.compile.to.json(model)
     const extModel = JSON.parse(extCsn)
     await this.write(extCsn).to(path.join(destGen, 'csn.json'))
@@ -109,14 +112,29 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
       this.logger.log(`[cds] - skip create [${this.stripProjectPaths(packageJson)}], already existing`)
     }
     if (this.isStagingBuild() && !exists) {
-      const content = await this._readTemplateAsJson(FILE_NAME_PACKAGE_JSON)
+      const targetPackageJson = await this._readTemplateAsJson(FILE_NAME_PACKAGE_JSON)
 
       // if specified, add a start command
-      if (this.task.options.startCmd) {
-        content.scripts['start'] = this.task.options.startCmd
+      if (this.task.options.deployCmd) {
+        targetPackageJson.scripts['start'] = this.task.options.deployCmd
       }
 
-      await this.write(content).to(path.join(this.task.dest, FILE_NAME_PACKAGE_JSON))
+      const rootPackageJsonPath = `${this.buildOptions.root}/package.json`;
+      const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath));
+   
+      // Merge schema options
+      targetPackageJson.cds.migrations.schema = rootPackageJson.cds.migrations.schema;
+
+      // Update dependency versions
+      const dependencies = rootPackageJson.dependencies;
+      for (const dependency in dependencies) {
+        if (targetPackageJson.dependencies[dependency] &&
+          !(typeof dependencies[dependency] === 'string' && dependencies[dependency].startsWith('.') || dependencies[dependency].startsWith('file:'))) {
+            targetPackageJson.dependencies[dependency] = rootPackageJson.dependencies[dependency]
+        }  
+      }
+
+      await this.write(targetPackageJson).to(path.join(this.task.dest, FILE_NAME_PACKAGE_JSON))
     }
   }
 
@@ -138,6 +156,7 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
   async _writeUndeployJson(src) {
     const migrationOptions = cds.env['migrations']['db']
     if (migrationOptions.deploy.undeployFile && existsSync(path.join(src, migrationOptions.deploy.undeployFile))) {
+      this.logger.log(`[cds] - ${this.task.for}: copy existing undeploy.json`)
       await this.copy(path.join(src, migrationOptions.deploy.undeployFile)).to(
         path.join(this.task.dest, 'undeploy.json')
       )
@@ -156,7 +175,7 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerOData {
       (await fs.pathExists(path.join(this.task.src, 'manifest.yml')))
     ) {
       if (DEBUG) {
-        this.logger.log('[cds] - skip cf manifest generation, already existing')
+        this.logger.log(`[cds] - ${this.task.for}: skip cf manifest generation, already existing`)
       }
       return
     }
@@ -183,7 +202,8 @@ buildpacks:
       await this.write(MANIFEST_YML_CONTENT).to(path.join(this.task.dest, FILE_NAME_MANIFEST_YML))
     } catch (e) {
       if (e.name === 'YAMLSyntaxError') {
-        this.logger.error('Failed to parse [mta.yaml] - skip manifest.yml generation')
+        this.logger.log(`[cds] - ${this.task.for}: failed to parse [mta.yaml] - skip manifest.yml generation`)
+        
       }
       this.logger.error(e)
     }

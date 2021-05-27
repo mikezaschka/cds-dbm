@@ -1,4 +1,4 @@
-const BuildTaskFactory = require('@sap/cds/lib/build/buildTaskFactory')
+const BuildTaskFactory = require('@sap/cds/bin/build/buildTaskFactory')
 const DbmBuildTaskHandlerFactory = require('./buildTaskHandlerFactory')
 
 export class DbmBuildTaskFactory extends BuildTaskFactory {

@@ -1,13 +1,13 @@
 let fs = require('@sap/cds-foss')('fs-extra')
-const BuildTaskHandlerFactory = require('@sap/cds/lib/build/buildTaskHandlerFactory')
-const { BUILD_TASK_USE_PREFIX, BUILD_TASK_NPM_SCOPE } = require('@sap/cds/lib/build/constants')
+const BuildTaskHandlerFactory = require('@sap/cds/bin/build/buildTaskHandlerFactory')
+const { BUILD_TASK_USE_PREFIX, BUILD_TASK_NPM_SCOPE } = require('@sap/cds/bin/build/constants')
 const path = require('path')
 const DEBUG = process.env.DEBUG
 
 class DbmBuildTaskHandlerFactory extends BuildTaskHandlerFactory {
   constructor(args) {
     super(args)
-  }
+  } 
 
   /**
    * Loads the build task handler implementation for the given build task.
@@ -48,6 +48,7 @@ class DbmBuildTaskHandlerFactory extends BuildTaskHandlerFactory {
       // resolving sym-links, but be careful as realpathSync is throwing exception if directory does not exist
       resolvedTask.src = fs.realpathSync(path.resolve(buildOptions.root, task.src))
     } catch (e) {
+      console.log(e)
       throw new Error(
         `Build task [${resolvedTask.use}] could not be resolved - folder src [${path.resolve(
           buildOptions.root,
@@ -73,10 +74,8 @@ class DbmBuildTaskHandlerFactory extends BuildTaskHandlerFactory {
       case 'postgres-cf':
         return './' + modulePath + '/'
       default:
-        return '@sap/cds/lib/build/' + modulePath + '/'
+        return '@sap/cds/bin/build/' + modulePath + '/'
     }
-
-    return modulePath
   }
 
   static _getForValueFromTask(task) {

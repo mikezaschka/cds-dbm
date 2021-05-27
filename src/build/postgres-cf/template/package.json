@@ -5,7 +5,11 @@
     "cds-dbm": "~0.0.18",
     "cds-pg": "~0.0.30"
   },
-  "scripts": {},
+  "engines": {
+    "node": ">=12"
+  },
+  "scripts": {
+  },
   "cds": {
     "requires": {
       "db": {
