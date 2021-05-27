@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.25](https://github.com/mikezaschka/cds-dbm/compare/v0.0.24...v0.0.25) (2021-05-27)
+
+
+### Features
+
+* support for latest @sap/cds ([ac6f6ad](https://github.com/mikezaschka/cds-dbm/commit/ac6f6ad935a4fb2f8010d3de9a7244e8f7a68e4b))
+
+
+### Bug Fixes
+
+* adjust data loading to changed internal api ([63db822](https://github.com/mikezaschka/cds-dbm/commit/63db822e9ce927b7084b9fba38b2e51ad8db8300))
+
 ### [0.0.24](https://github.com/mikezaschka/cds-dbm/compare/v0.0.23...v0.0.24) (2021-03-07)
 
 ### [0.0.23](https://github.com/mikezaschka/cds-dbm/compare/v0.0.22...v0.0.23) (2021-01-18)
