@@ -123,7 +123,9 @@ class PostgresCfModuleBuilder extends NodeCfModuleBuilder {
       const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath));
    
       // Merge schema options
-      targetPackageJson.cds.migrations.schema = rootPackageJson.cds.migrations.schema;
+      if(rootPackageJson.cds?.migrations?.schema) {
+        targetPackageJson.cds.migrations.schema = rootPackageJson.cds.migrations.schema;
+      }
 
       // Update dependency versions
       const dependencies = rootPackageJson.dependencies;
