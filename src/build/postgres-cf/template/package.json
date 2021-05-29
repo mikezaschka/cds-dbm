@@ -1,9 +1,9 @@
 {
   "name": "deploy",
   "dependencies": {
-    "@sap/cds": "~4.3.1",
-    "cds-dbm": "~0.0.18",
-    "cds-pg": "~0.0.30"
+    "@sap/cds": "~5.1.5",
+    "cds-dbm": "~0.0.25",
+    "cds-pg": "~0.0.51"
   },
   "engines": {
     "node": ">=12"
