@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.26](https://github.com/mikezaschka/cds-dbm/compare/v0.0.25...v0.0.26) (2021-05-29)
+
+
+### Bug Fixes
+
+* only copy schema if specified in package.json ([bc8cea0](https://github.com/mikezaschka/cds-dbm/commit/bc8cea0192070b5eab34eb5165c8dee8d1a21cb7))
+
 ### [0.0.25](https://github.com/mikezaschka/cds-dbm/compare/v0.0.24...v0.0.25) (2021-05-27)
 
 
