@@ -137,7 +137,7 @@ While an `undeploy.json` file gives you fine grained control, it is also possibl
 
 ### Commands
 
-The following commands exists for working the `cds-dbm` in the automated delta deployment mode:
+The following commands exists for working with `cds-dbm` in the automated delta deployment mode:
 
 **Currently tall tasks must be called with npx**
 
