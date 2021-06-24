@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.27](https://github.com/mikezaschka/cds-dbm/compare/v0.0.26...v0.0.27) (2021-06-24)
+
+
+### Bug Fixes
+
+* handle more complex cascading views correctly ([7bee324](https://github.com/mikezaschka/cds-dbm/commit/7bee324191ad3f073042171f6d44966551a4c962))
+
 ### [0.0.26](https://github.com/mikezaschka/cds-dbm/compare/v0.0.25...v0.0.26) (2021-05-29)
 
 ### Bug Fixes
