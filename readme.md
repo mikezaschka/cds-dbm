@@ -10,6 +10,7 @@ The library offers a set of command line tasks related to deploying a cds data m
 - [drop](#command_drop)
 
 It also contains a task to create ready-to-deploy build fragments for SAP Business Technology Platform (BTP) Cloud Foundry:
+
 - [build](#command_build)
 
 ## Current status
@@ -35,7 +36,6 @@ There are also some blogposts in the SAP Community showcasing the functionality 
 - https://blogs.sap.com/2020/11/16/getting-started-with-cap-on-postgresql-node.js/
 - https://blogs.sap.com/2020/11/30/run-and-deploy-cap-with-postgresql-on-sap-cloud-platform-cloud-foundry-node.js/
 
-
 <details><summary>Why does <i>cds-dbm</i> (currently) not support SAP HANA?</summary>
 <p>
 
@@ -60,7 +60,6 @@ Simply add this package to your [CAP](https://cap.cloud.sap/docs/) project by ru
 ```bash
 npm install cds-dbm
 ```
-
 
 `cds-dbm` requires some additional configuration added to your `package.json`:
 
@@ -89,7 +88,7 @@ Internally `cds-dbm` uses 3 different schemas during deployment:
 
 - _default_ – The schema containing your currently deployed and thus running schema
 - _clone_ – A schema that will be a clone of the _default_ schema during deployment
-- _reference_ – The schema that will contain the CDS model 
+- _reference_ – The schema that will contain the CDS model
 
 ## Automated delta deployments
 
@@ -105,7 +104,6 @@ In the meantime some notes on the delta processing:
 5. Do some adjustments on the changelog (handle undeployment stuff, fix order of things).
 6. Finally deploy changelog to current schema.
 7. Load data from .csv files (if requested).
-
 
 ### Dropping tables/views
 
@@ -146,6 +144,7 @@ npx cds-dbm <task>
 ```
 
 <a name="command_deploy"></a>
+
 #### `deploy`
 
 Performs a delta deployment of the current cds data model to the database. By default no csv files are loaded. If this is required, the load strategy has to be defined (`load-via`).
@@ -174,6 +173,7 @@ cds-dbm deploy --auto-undeploy --dry
 ```
 
 <a name="command_load"></a>
+
 #### `load`
 
 Loads data from CSV files into the database.
@@ -200,6 +200,7 @@ cds-dbm load --via delta
 - `via` (_string_) - Can be either `full` (truncate and insert) or `delta` (check for existing records, then update or insert)
 
 <a name="command_drop"></a>
+
 #### `drop`
 
 Drops all tables and views in your data model from the database. If the `all` parameter is given, then everything in the whole schema will be dropped, not only the cds specific entities.
@@ -222,6 +223,7 @@ cds-dbm drop --all
 ```
 
 <a name="command_diff"></a>
+
 #### `diff`
 
 Generates a descriptive text containing all the differences between the defined cds model and the current status of the database. By default, the information will be logged to the console.
@@ -244,6 +246,7 @@ cds-dbm diff --to-file db/diff.txt
 ```
 
 <a name="command_build"></a>
+
 #### `build`
 
 Executes the defined cds build tasks, either in a .cdsrc or in the package json. `cds-dbm` comes with a pre-baked build task, to deploy the data model to a PostgreSQL database on SAP BTP.
@@ -273,6 +276,7 @@ Example configuration:
 ```bash
 cds-dbm build
 ```
+
 ## Sponsors
 
 Thank you to **p36 (https://p36.io/)** for sponsoring this project.

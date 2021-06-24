@@ -96,7 +96,7 @@ const extractViewColumnNames = (sql) => {
 
 const getCompiledSQL = async (service, model) => {
   const csn = await cds.load(model)
-  let cdssql: string[] = (cds.compile.to.sql(csn) as unknown) as string[]
+  let cdssql: string[] = cds.compile.to.sql(csn) as unknown as string[]
   const serviceInstance = cds.services[service] as PostgresDatabase
 
   for (const index in cdssql) {

@@ -4,22 +4,19 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.26](https://github.com/mikezaschka/cds-dbm/compare/v0.0.25...v0.0.26) (2021-05-29)
 
-
 ### Bug Fixes
 
-* only copy schema if specified in package.json ([bc8cea0](https://github.com/mikezaschka/cds-dbm/commit/bc8cea0192070b5eab34eb5165c8dee8d1a21cb7))
+- only copy schema if specified in package.json ([bc8cea0](https://github.com/mikezaschka/cds-dbm/commit/bc8cea0192070b5eab34eb5165c8dee8d1a21cb7))
 
 ### [0.0.25](https://github.com/mikezaschka/cds-dbm/compare/v0.0.24...v0.0.25) (2021-05-27)
 
-
 ### Features
 
-* support for latest @sap/cds ([ac6f6ad](https://github.com/mikezaschka/cds-dbm/commit/ac6f6ad935a4fb2f8010d3de9a7244e8f7a68e4b))
-
+- support for latest @sap/cds ([ac6f6ad](https://github.com/mikezaschka/cds-dbm/commit/ac6f6ad935a4fb2f8010d3de9a7244e8f7a68e4b))
 
 ### Bug Fixes
 
-* adjust data loading to changed internal api ([63db822](https://github.com/mikezaschka/cds-dbm/commit/63db822e9ce927b7084b9fba38b2e51ad8db8300))
+- adjust data loading to changed internal api ([63db822](https://github.com/mikezaschka/cds-dbm/commit/63db822e9ce927b7084b9fba38b2e51ad8db8300))
 
 ### [0.0.24](https://github.com/mikezaschka/cds-dbm/compare/v0.0.23...v0.0.24) (2021-03-07)
 
@@ -31,15 +28,13 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.20](https://github.com/mikezaschka/cds-dbm/compare/v0.0.19...v0.0.20) (2020-12-08)
 
-
 ### Features
 
-* remove not supported SQLite adapter ([e0eb17d](https://github.com/mikezaschka/cds-dbm/commit/e0eb17dd1f6430d42d93e665a575192c68bdea51))
-
+- remove not supported SQLite adapter ([e0eb17d](https://github.com/mikezaschka/cds-dbm/commit/e0eb17dd1f6430d42d93e665a575192c68bdea51))
 
 ### Bug Fixes
 
-* handle dropping and creating cascading views ([41cd76a](https://github.com/mikezaschka/cds-dbm/commit/41cd76a0f93f65d0702eef8e2bf67733ff0e0c9e))
+- handle dropping and creating cascading views ([41cd76a](https://github.com/mikezaschka/cds-dbm/commit/41cd76a0f93f65d0702eef8e2bf67733ff0e0c9e))
 
 ### [0.0.19](https://github.com/mikezaschka/cds-dbm/compare/v0.0.18...v0.0.19) (2020-12-08)
 

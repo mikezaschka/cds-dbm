@@ -286,7 +286,7 @@ export abstract class BaseAdapter {
       console.error('Failed loading cds model')
     }
 
-    this.cdsSQL = (cds.compile.to.sql(this.cdsModel) as unknown) as string[]
+    this.cdsSQL = cds.compile.to.sql(this.cdsModel) as unknown as string[]
     this.cdsSQL.sort(sortByCasadingViews)
     return Promise.resolve()
   }
@@ -313,8 +313,8 @@ export abstract class BaseAdapter {
     }
 
     const tx = cds.services[service].transaction({})
-    await tx.run((dropViews as unknown) as ConstructedQuery)
-    await tx.run((dropTables as unknown) as ConstructedQuery)
+    await tx.run(dropViews as unknown as ConstructedQuery)
+    await tx.run(dropTables as unknown as ConstructedQuery)
     return tx.commit()
   }
 }

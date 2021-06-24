@@ -8,8 +8,7 @@
   "engines": {
     "node": ">=12"
   },
-  "scripts": {
-  },
+  "scripts": {},
   "cds": {
     "requires": {
       "db": {

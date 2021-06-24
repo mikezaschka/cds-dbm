@@ -103,15 +103,15 @@ export class DataLoader {
     for (const row of rows) {
       const keyColumns = Object.keys(entity.keys)
       let where = keyColumns.reduce((set, col, index) => {
-        set[col] = row[cols.indexOf(col)];
+        set[col] = row[cols.indexOf(col)]
         return set
       }, {})
 
       let record = await SELECT.from(entity.name).columns(keyColumns.join(',')).where(where)
       if (record.length > 0) {
         let set = cols.reduce((set, col, index) => {
-          if(typeof row[index] !== "undefined") {
-            set[col] = row[index];
+          if (typeof row[index] !== 'undefined') {
+            set[col] = row[index]
           }
           return set
         }, {})

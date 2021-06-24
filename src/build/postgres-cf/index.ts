@@ -15,11 +15,10 @@ const FILE_NAME_PACKAGE_JSON = 'package.json'
 const DEPLOY_CMD = 'npx cds-dbm deploy --load-via delta'
 
 class PostgresCfModuleBuilder extends NodeCfModuleBuilder {
-
   /**
-   * 
-   * @param task 
-   * @param buildOptions 
+   *
+   * @param task
+   * @param buildOptions
    */
   constructor(task, buildOptions) {
     super('PostgreSQL CF Module Builder', task, buildOptions)
@@ -119,21 +118,26 @@ class PostgresCfModuleBuilder extends NodeCfModuleBuilder {
         targetPackageJson.scripts['start'] = this.task.options.deployCmd
       }
 
-      const rootPackageJsonPath = `${this.buildOptions.root}/package.json`;
-      const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath));
-   
+      const rootPackageJsonPath = `${this.buildOptions.root}/package.json`
+      const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath))
+
       // Merge schema options
-      if(rootPackageJson.cds?.migrations?.schema) {
-        targetPackageJson.cds.migrations.schema = rootPackageJson.cds.migrations.schema;
+      if (rootPackageJson.cds?.migrations?.schema) {
+        targetPackageJson.cds.migrations.schema = rootPackageJson.cds.migrations.schema
       }
 
       // Update dependency versions
-      const dependencies = rootPackageJson.dependencies;
+      const dependencies = rootPackageJson.dependencies
       for (const dependency in dependencies) {
-        if (targetPackageJson.dependencies[dependency] &&
-          !(typeof dependencies[dependency] === 'string' && dependencies[dependency].startsWith('.') || dependencies[dependency].startsWith('file:'))) {
-            targetPackageJson.dependencies[dependency] = rootPackageJson.dependencies[dependency]
-        }  
+        if (
+          targetPackageJson.dependencies[dependency] &&
+          !(
+            (typeof dependencies[dependency] === 'string' && dependencies[dependency].startsWith('.')) ||
+            dependencies[dependency].startsWith('file:')
+          )
+        ) {
+          targetPackageJson.dependencies[dependency] = rootPackageJson.dependencies[dependency]
+        }
       }
 
       await this.write(targetPackageJson).to(path.join(this.task.dest, FILE_NAME_PACKAGE_JSON))
@@ -205,7 +209,6 @@ buildpacks:
     } catch (e) {
       if (e.name === 'YAMLSyntaxError') {
         this.logger.log(`[cds] - ${this.task.for}: failed to parse [mta.yaml] - skip manifest.yml generation`)
-        
       }
       this.logger.error(e)
     }

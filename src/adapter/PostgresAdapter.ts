@@ -40,9 +40,7 @@ export class PostgresAdapter extends BaseAdapter {
     const credentials = this.options.service.credentials
     const client = new Client(getCredentialsForClient(credentials))
     await client.connect()
-    const {
-      rows,
-    } = await client.query(
+    const { rows } = await client.query(
       `SELECT table_name, view_definition FROM information_schema.views WHERE table_schema = 'public' AND table_name = $1 ORDER BY table_name;`,
       [viewName]
     )

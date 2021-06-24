@@ -191,22 +191,7 @@ export class ChangeLog {
           return -1
         }
 
-        // Does a depend on any other view
- //       for (const key in viewDefinitions) {
- //         if (aRegex.test(viewDefinitions[key].definition)) {
- //           return -1
- //         }
- //       }
- //
- //       // Does b depend on any other view
- //       for (const key in viewDefinitions) {
- //         if (bRegex.test(viewDefinitions[key].definition)) {
- //           return 1
- //         }
- //       }
-
-        // Nothing? Then order by name
-        return aViewName > bViewName ? -1 : 1
+        return 0
       }
 
       return 0

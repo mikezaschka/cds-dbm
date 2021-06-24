@@ -7,7 +7,7 @@ const DEBUG = process.env.DEBUG
 class DbmBuildTaskHandlerFactory extends BuildTaskHandlerFactory {
   constructor(args) {
     super(args)
-  } 
+  }
 
   /**
    * Loads the build task handler implementation for the given build task.
