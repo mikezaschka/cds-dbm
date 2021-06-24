@@ -47,8 +47,8 @@ export class ChangeLog {
         const aViewName = a.changeSet.changes[0].dropView.viewName
         const bViewName = b.changeSet.changes[0].dropView.viewName
 
-        const aRegex = RegExp(`FROM ${aViewName}|JOIN ${aViewName}`, 'gm')
-        const bRegex = RegExp(`FROM ${bViewName}|JOIN ${bViewName}`, 'gm')
+        const aRegex = RegExp(`FROM \\(?${aViewName}|JOIN \\(?${aViewName}`, 'gm')
+        const bRegex = RegExp(`FROM \\(?${bViewName}|JOIN \\(?${bViewName}`, 'gm')
 
         // Does b directly depend on a
         if (bRegex.test(viewDefinitions[aViewName].definition)) {
@@ -181,8 +181,8 @@ export class ChangeLog {
         const aViewName = a.changeSet.changes[0].createView.viewName
         const bViewName = b.changeSet.changes[0].createView.viewName
 
-        const aRegex = RegExp(`FROM ${aViewName}|JOIN ${aViewName}`, 'gm')
-        const bRegex = RegExp(`FROM ${bViewName}|JOIN ${bViewName}`, 'gm')
+        const aRegex = RegExp(`FROM \\(?${aViewName}|JOIN \\(?${aViewName}`, 'gm')
+        const bRegex = RegExp(`FROM \\(?${bViewName}|JOIN \\(?${bViewName}`, 'gm')
 
         if (bRegex.test(a.changeSet.changes[0].createView.selectQuery)) {
           return 1
@@ -192,18 +192,18 @@ export class ChangeLog {
         }
 
         // Does a depend on any other view
-        for (const key in viewDefinitions) {
-          if (aRegex.test(viewDefinitions[key].definition)) {
-            return -1
-          }
-        }
-
-        // Does b depend on any other view
-        for (const key in viewDefinitions) {
-          if (bRegex.test(viewDefinitions[key].definition)) {
-            return 1
-          }
-        }
+ //       for (const key in viewDefinitions) {
+ //         if (aRegex.test(viewDefinitions[key].definition)) {
+ //           return -1
+ //         }
+ //       }
+ //
+ //       // Does b depend on any other view
+ //       for (const key in viewDefinitions) {
+ //         if (bRegex.test(viewDefinitions[key].definition)) {
+ //           return 1
+ //         }
+ //       }
 
         // Nothing? Then order by name
         return aViewName > bViewName ? -1 : 1

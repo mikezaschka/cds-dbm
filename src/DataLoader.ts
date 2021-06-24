@@ -47,7 +47,7 @@ export class DataLoader {
     if (folders.size === 0) return
     for (let folder of folders) {
       const files = await readdir(folder)
-      for (let each of files.filter(this._filterCsvFiles)) {
+      for (let each of files.filter(this._filterCsvFiles.bind(this))) {
         // Verify entity
         let name = each.replace(/-/g, '.').slice(0, -path.extname(each).length)
         let entity = this._entity4(name)
@@ -103,14 +103,16 @@ export class DataLoader {
     for (const row of rows) {
       const keyColumns = Object.keys(entity.keys)
       let where = keyColumns.reduce((set, col, index) => {
-        set[col] = row[index]
+        set[col] = row[cols.indexOf(col)];
         return set
       }, {})
 
       let record = await SELECT.from(entity.name).columns(keyColumns.join(',')).where(where)
       if (record.length > 0) {
         let set = cols.reduce((set, col, index) => {
-          set[col] = row[index]
+          if(typeof row[index] !== "undefined") {
+            set[col] = row[index];
+          }
           return set
         }, {})
         await UPDATE(entity.name).set(set).where(where)
