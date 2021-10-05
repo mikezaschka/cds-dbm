@@ -9,9 +9,9 @@ The library offers a set of command line tasks related to deploying a cds data m
 - [diff](#command_diff)
 - [drop](#command_drop)
 
-It also contains a task to create ready-to-deploy build fragments for SAP Business Technology Platform (BTP) Cloud Foundry:
+It also contains a `sap/@cds` builder task to create ready-to-deploy build fragments for SAP Business Technology Platform (BTP) Cloud Foundry:
 
-- [build](#command_build)
+- [Custom Build Task](#command_build)
 
 ## Current status
 
@@ -247,9 +247,9 @@ cds-dbm diff --to-file db/diff.txt
 
 <a name="command_build"></a>
 
-#### `build`
+### `Custom Build Task`
 
-Executes the defined cds build tasks, either in a .cdsrc or in the package json. `cds-dbm` comes with a pre-baked build task, to deploy the data model to a PostgreSQL database on SAP BTP.
+Executes the defined cds build task, either from a .cdsrc or the package json. `cds-dbm` comes with a pre-baked build task, to deploy the data model to a PostgreSQL database on SAP BTP Cloud Foundry.
 
 Example configuration:
 
@@ -261,7 +261,8 @@ Example configuration:
           "src": "srv"
         },
         {
-          "use": "postgres-cf",
+          "use": "cds-dbm/dist/build/postgres-cf",
+          "for": "postgres-cf",
           "src": "db",
           "options": {
             "deployCmd": "npx cds-dbm deploy --load-via delta --auto-undeploy"
@@ -271,10 +272,46 @@ Example configuration:
     },
 ```
 
-**Usage**
+**Usage via `cds build`**
 
 ```bash
-cds-dbm build
+cds build
+```
+
+This will generate a specifc set of files into the `gen/db` (or any other configured) folder, that will be deployed to SAP BTP CF environment.
+
+
+An example configuration for a `mta.yml` leveraging the build fragments:
+
+```yaml
+  - name: devtoberfest-db-deployer
+    type: custom
+    path: gen/db
+    parameters:
+      buildpacks: [https://github.com/cloudfoundry/apt-buildpack#v0.2.2, nodejs_buildpack] 
+      no-route: true
+      no-start: true
+      disk-quota: 2GB
+      memory: 512MB
+      tasks:
+      - name: deploy_to_postgresql
+        command: ./deploy.sh
+        disk-quota: 2GB
+        memory: 512MB      
+    build-parameters:
+      ignore: ["node_modules/"]
+    requires:
+      - name: devtoberfest-database 
+
+resources:
+  - name: devtoberfest-database
+    parameters:
+      path: ./pg-options.json
+      service: postgresql-db
+      service-plan: trial
+      skip-service-updates:
+        parameters: true
+    type: org.cloudfoundry.managed-service      
 ```
 
 ## Sponsors
