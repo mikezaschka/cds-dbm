@@ -1,4 +1,3 @@
-import * as cdsg from '@sap/cds'
 import fs from 'fs'
 import { v4 as uuid } from 'uuid'
 import adapterFactory from '../src/adapter'
@@ -15,21 +14,20 @@ import {
 } from './util/postgreshelper'
 import { BaseAdapter } from '../src/adapter/BaseAdapter'
 
-const cds = cdsg as any
-
 describe('PostgresAdapter', () => {
   beforeEach(() => {
     if (cds.services['db']) {
+
+      // @ts-ignore
       cds.services['db'].disconnect()
     }
 
-    // avoid timeouts
-    jest.setTimeout(30000)
   })
 
   const options: configOptions = {
     service: {
       name: 'db',
+      dialect: 'plain',
       impl: 'cds-pg',
       model: ['./test/app/srv/beershop-service.cds'],
       credentials: {
@@ -57,8 +55,11 @@ describe('PostgresAdapter', () => {
     let adapter: BaseAdapter
 
     beforeEach(async () => {
+      // @ts-ignore
       cds.env.requires.db = Object.assign({ kind: 'postgres' }, options.service)
+      // @ts-ignore
       cds.env.requires.postgres = options.service
+      console.log(cds.env.requires);
       adapter = await adapterFactory('db', options)
     })
     it('+ dropAll: false + should remove all cds based tables and views from the database', async () => {
@@ -95,7 +96,9 @@ describe('PostgresAdapter', () => {
 
     beforeEach(async () => {
       // setup PostgreSQL
+      // @ts-ignore
       cds.env.requires.db = Object.assign({ kind: 'postgres' }, options.service)
+      // @ts-ignore
       cds.env.requires.postgres = options.service
 
       // clean the stage
@@ -140,6 +143,7 @@ describe('PostgresAdapter', () => {
         // use build-in mechanism to deploy
         await cds_deploy(options.service.model[0], {}).to('db')
 
+        // @ts-ignore
         cds.services['db'].disconnect()
       })
       it('should add additional tables and views', async () => {
@@ -156,7 +160,7 @@ describe('PostgresAdapter', () => {
         }
       })
 
-      it.skip('should add cascading views', async () => {
+      it('should add cascading views', async () => {
         // load an updated model
         options.service.model = ['./test/app/srv/beershop-service_viewsOnViews.cds']
         adapter = await adapterFactory('db', options)
@@ -173,7 +177,7 @@ describe('PostgresAdapter', () => {
         }
       })
 
-      it.skip('should redeploy cascading views', async () => {
+      it('should redeploy cascading views', async () => {
         // load an updated model
         options.service.model = ['./test/app/srv/beershop-service_viewsOnViews.cds']
         adapter = await adapterFactory('db', options)
@@ -292,7 +296,9 @@ describe('PostgresAdapter', () => {
 
     beforeEach(async () => {
       // setup PostgreSQL
+      // @ts-ignore
       cds.env.requires.db = Object.assign({ kind: 'postgres' }, options.service)
+      // @ts-ignore
       cds.env.requires.postgres = options.service
 
       // clean the stage
@@ -319,7 +325,9 @@ describe('PostgresAdapter', () => {
 
     beforeEach(async () => {
       // setup PostgreSQL
+      // @ts-ignore
       cds.env.requires.db = Object.assign({ kind: 'postgres' }, options.service)
+      // @ts-ignore
       cds.env.requires.postgres = options.service
 
       // clean the stage

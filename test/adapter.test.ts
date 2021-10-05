@@ -1,8 +1,5 @@
-import * as cdsg from '@sap/cds'
 import adapterFactory from '../src/adapter'
 import { configOptions } from '../src/config'
-
-const cds = cdsg as any
 
 describe('Adapter factory', () => {
   const options: configOptions = {
@@ -24,13 +21,17 @@ describe('Adapter factory', () => {
 
   beforeEach(() => {
     if (cds.services['db']) {
+
+      // @ts-ignore
       cds.services['db'].disconnect()
     }
   })
 
   it('should create an adapter instance for PostgreSQL', async () => {
     // Setup PostgreSQL
+    // @ts-ignore
     cds.env.requires.db = { kind: 'postgres' }
+    // @ts-ignore
     cds.env.requires.postgres = {
       impl: 'cds-pg',
     }

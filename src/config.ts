@@ -21,6 +21,7 @@ interface serviceOptions {
   name: string
   kind?: string
   label?: string
+  dialect?: string
   model: string[]
   tags?: string[]
   impl?: string
