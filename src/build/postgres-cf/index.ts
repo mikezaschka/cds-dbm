@@ -2,8 +2,7 @@ import foss from '@sap/cds-foss'
 const fs = foss('fs-extra')
 import { chmodSync, existsSync } from 'fs'
 import path from 'path'
-const NodeCfModuleBuilder = require('@sap/cds/bin/build/node-cf')
-const { BuildMessage, BuildError } = require('@sap/cds/bin/build/util')
+const BuildTaskHandlerInternal = require('@sap/cds/bin/build/provider/buildTaskHandlerInternal')
 const { getHanaDbModuleDescriptor } = require('@sap/cds/bin/build/mtaUtil')
 const { FOLDER_GEN, FILE_EXT_CDS } = require('@sap/cds/bin/build/constants')
 
@@ -14,7 +13,7 @@ const FILE_EXT_CSV = '.csv'
 const FILE_NAME_PACKAGE_JSON = 'package.json'
 const DEPLOY_CMD = 'npx cds-dbm deploy --load-via delta'
 
-class PostgresCfModuleBuilder extends NodeCfModuleBuilder {
+class PostgresCfModuleBuilder extends BuildTaskHandlerInternal {
   /**
    *
    * @param task
@@ -38,19 +37,9 @@ class PostgresCfModuleBuilder extends NodeCfModuleBuilder {
    */
   public async build() {
     const { src, dest } = this.task
-    const modelPaths = this.resolveModel()
     const destGen = this.isStagingBuild() ? dest : path.join(dest, FOLDER_GEN)
-    if (!modelPaths || modelPaths.length === 0) {
-      this.logger.log('[cds] - no model found, skip build')
-      return this._result
-    }
-    if (DEBUG) {
-      this.logger.log(`[cds] - model: ${this.stripProjectPaths(modelPaths).join(', ')}`)
-    }
-
-    const model = await this.model(modelPaths)
+    const model = await this.model()
     const extCsn = this.cds.compile.to.json(model)
-    const extModel = JSON.parse(extCsn)
     await this.write(extCsn).to(path.join(destGen, 'csn.json'))
 
     await this._copyNativeContent(src, dest)
