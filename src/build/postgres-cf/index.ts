@@ -32,6 +32,10 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerInternal {
     )
   }
 
+  get priority() {
+    return 1
+  }
+
   /**
    * name
    */

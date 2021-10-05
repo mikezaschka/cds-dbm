@@ -1,8 +1,6 @@
 import { ConstructedQuery } from '@sap/cds/apis/ql'
 import liquibase from '../liquibase'
 import fs from 'fs'
-import * as cdsg from '@sap/cds'
-const cds = cdsg as any
 import path from 'path'
 import { Logger } from 'winston'
 import { configOptions, liquibaseOptions } from './../config'

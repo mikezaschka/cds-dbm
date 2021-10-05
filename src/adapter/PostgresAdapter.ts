@@ -1,7 +1,5 @@
 import { Client, ClientConfig } from 'pg'
 import fs from 'fs'
-import * as cdsg from '@sap/cds'
-const cds = cdsg as any
 import liquibase from '../liquibase'
 import { BaseAdapter } from './BaseAdapter'
 import { liquibaseOptions } from './../config'
