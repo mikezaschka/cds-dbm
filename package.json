@@ -55,7 +55,7 @@
     "@sap/hana-client": "^2.10.20",
     "@types/jest": "^27.0.2",
     "@types/yargs": "^17.0.6",
-    "cds-pg": "0.1.14",
+    "cds-pg": "0.1.16",
     "eslint": "^8.2.0",
     "eslint-plugin-jest": "^25.2.4",
     "express": "^4.17.1",
