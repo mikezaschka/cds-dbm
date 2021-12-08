@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/mikezaschka/cds-dbm#readme",
   "dependencies": {
-    "@sap/cds": "^5.5.2",
+    "@sap/cds": "^5.7.1",
     "@types/js-yaml": "^4.0.3",
     "@types/pg": "^8.6.1",
     "@types/sqlite3": "^3.1.7",
@@ -70,8 +70,8 @@
     "standard-version": "^9.3.1",
     "supertest": "^6.1.6",
     "ts-jest": "^27",
-    "typescript": "^4.4.3",
     "ts-node": "~10.2.1",
+    "typescript": "^4.4.3",
     "underscore": "^1.13.1",
     "underscore.string": "^3.3.5",
     "uuid": "^8.3.2"
