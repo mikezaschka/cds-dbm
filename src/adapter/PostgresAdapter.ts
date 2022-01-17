@@ -36,17 +36,22 @@ const getCredentialsForClient = (credentials) => {
 export class PostgresAdapter extends BaseAdapter {
   async getViewDefinition(viewName: string): Promise<ViewDefinition> {
     const credentials = this.options.service.credentials
+    const schema = this.options.migrations.schema?.default;
+    const query = `SELECT table_name, view_definition FROM information_schema.views WHERE table_schema = '` + schema +`' AND table_name = $1 ORDER BY table_name;` as string;
     const client = new Client(getCredentialsForClient(credentials))
     await client.connect()
     const { rows } = await client.query(
-      `SELECT table_name, view_definition FROM information_schema.views WHERE table_schema = 'public' AND table_name = $1 ORDER BY table_name;`,
+      query,
       [viewName]
     )
     await client.end()
+    
+    const pattern = schema + `.`;
+    const regex = new RegExp(pattern, "g");
 
     const viewDefinition: ViewDefinition = {
       name: viewName,
-      definition: rows[0]?.view_definition?.replace(/public./g, ''),
+      definition: rows[0]?.view_definition?.replace(regex, ''),
     }
 
     return viewDefinition

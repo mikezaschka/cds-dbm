@@ -17,6 +17,19 @@ interface migrationOptions {
   }
 }
 
+interface credentials {
+  host?: string
+  hostname?: string
+  port?: number
+  database?: string
+  dbname?: string
+  user?: string
+  username?: string
+  password?: string
+  sslcert?: string
+  sslrootcert?: string
+};
+
 interface serviceOptions {
   name: string
   kind?: string
@@ -25,18 +38,7 @@ interface serviceOptions {
   model: string[]
   tags?: string[]
   impl?: string
-  credentials: {
-    host?: string
-    hostname?: string
-    port?: number
-    database?: string
-    dbname?: string
-    user?: string
-    username?: string
-    password?: string
-    sslcert?: string
-    sslrootcert?: string
-  }
+  credentials: credentials
 }
 
 interface liquibaseOptions {
@@ -74,4 +76,4 @@ const config = async (service: string): Promise<configOptions> => {
   }
 }
 
-export { configOptions, liquibaseOptions, migrationOptions, config }
+export { configOptions, credentials, liquibaseOptions, migrationOptions, config }

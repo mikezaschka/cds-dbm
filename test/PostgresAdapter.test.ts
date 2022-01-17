@@ -69,7 +69,7 @@ describe('PostgresAdapter', () => {
       // drop everything
       await adapter.drop({ dropAll: false })
 
-      const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+      const existingTablesInPostgres = await getTableNamesFromPostgres(options)
       const tableAndViewNamesFromCds = await getEntityNamesFromCds('db', options.service.model[0])
 
       for (const entity of tableAndViewNamesFromCds) {
@@ -81,13 +81,13 @@ describe('PostgresAdapter', () => {
       // use build-in mechanism to deploy
       await cds_deploy(options.service.model[0], {}).to('db')
 
-      let existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+      let existingTablesInPostgres = await getTableNamesFromPostgres(options)
       expect(existingTablesInPostgres.length).not.toEqual(0)
 
       // drop everything
       await adapter.drop({ dropAll: true })
 
-      existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+      existingTablesInPostgres = await getTableNamesFromPostgres(options)
       expect(existingTablesInPostgres.length).toEqual(0)
     })
   })
@@ -107,9 +107,8 @@ describe('PostgresAdapter', () => {
 
     it('should create the database if the create-db option is given', async () => {
       await dropDatabase(options.service.credentials)
-
       await adapter.deploy({ createDb: true })
-      const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+      const existingTablesInPostgres = await getTableNamesFromPostgres(options)
       expect(existingTablesInPostgres.length).toBeGreaterThan(0)
     })
 
@@ -117,7 +116,7 @@ describe('PostgresAdapter', () => {
       await adapter.drop({ dropAll: true })
       await adapter.deploy({})
 
-      const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+      const existingTablesInPostgres = await getTableNamesFromPostgres(options)
       const tableAndViewNamesFromCds = await getEntityNamesFromCds('db', options.service.model[0])
 
       for (const entity of tableAndViewNamesFromCds) {
@@ -152,7 +151,7 @@ describe('PostgresAdapter', () => {
         adapter = await adapterFactory('db', options)
         await adapter.deploy({})
 
-        const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+        const existingTablesInPostgres = await getTableNamesFromPostgres(options)
         const tableAndViewNamesFromCds = await getEntityNamesFromCds('db', options.service.model[0])
 
         for (const entity of tableAndViewNamesFromCds) {
@@ -166,7 +165,7 @@ describe('PostgresAdapter', () => {
         adapter = await adapterFactory('db', options)
         await adapter.deploy({})
 
-        const existingViewsInPostgres = await getViewNamesFromPostgres(options.service.credentials)
+        const existingViewsInPostgres = await getViewNamesFromPostgres(options)
         const tableAndViewNamesFromCds = await getEntityNamesFromCds('db', options.service.model[0])
 
         for (const entity of tableAndViewNamesFromCds) {
@@ -184,7 +183,7 @@ describe('PostgresAdapter', () => {
         await adapter.deploy({})
         await adapter.deploy({})
 
-        const existingViewsInPostgres = await getViewNamesFromPostgres(options.service.credentials)
+        const existingViewsInPostgres = await getViewNamesFromPostgres(options)
         const tableAndViewNamesFromCds = await getEntityNamesFromCds('db', options.service.model[0])
 
         for (const entity of tableAndViewNamesFromCds) {
@@ -202,7 +201,7 @@ describe('PostgresAdapter', () => {
 
         await adapter.deploy({ autoUndeploy: false })
 
-        const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+        const existingTablesInPostgres = await getTableNamesFromPostgres(options)
         expect(existingTablesInPostgres.map((i) => i.table_name)).toContain('csw_beers')
         expect(existingTablesInPostgres.map((i) => i.table_name)).toContain('csw_brewery')
       })
@@ -214,7 +213,7 @@ describe('PostgresAdapter', () => {
 
         await adapter.deploy({})
 
-        const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+        const existingTablesInPostgres = await getTableNamesFromPostgres(options)
 
         // named in undeployFile
         expect(existingTablesInPostgres.map((i) => i.table_name)).not.toContain('csw_beers')
@@ -229,7 +228,7 @@ describe('PostgresAdapter', () => {
 
         await adapter.deploy({ autoUndeploy: true })
 
-        const existingTablesInPostgres = await getTableNamesFromPostgres(options.service.credentials)
+        const existingTablesInPostgres = await getTableNamesFromPostgres(options)
         const tableAndViewNamesFromCds = await getEntityNamesFromCds('db', options.service.model[0])
 
         for (const entity of tableAndViewNamesFromCds) {
@@ -251,7 +250,7 @@ describe('PostgresAdapter', () => {
           const [, table, entity] = each.match(/^\s*CREATE (?:(TABLE)|VIEW)\s+"?([^\s(]+)"?/im) || []
           if (table) {
             let cdsColumns = extractTableColumnNamesFromSQL(each)
-            let tableColumns = await extractColumnNamesFromPostgres(options.service.credentials, entity)
+            let tableColumns = await extractColumnNamesFromPostgres(options, entity)
 
             expect(cdsColumns.map((c) => c.toLowerCase()).sort).toEqual(tableColumns.map((c) => c.column_name).sort)
           }
@@ -269,7 +268,7 @@ describe('PostgresAdapter', () => {
           const [, table, entity] = each.match(/^\s*CREATE (?:(TABLE)|VIEW)\s+"?([^\s(]+)"?/im) || []
           if (table) {
             let cdsColumns = extractTableColumnNamesFromSQL(each)
-            let tableColumns = await extractColumnNamesFromPostgres(options.service.credentials, entity)
+            let tableColumns = await extractColumnNamesFromPostgres(options, entity)
 
             expect(cdsColumns.map((c) => c.toLowerCase()).sort).toEqual(tableColumns.map((c) => c.column_name).sort)
           }
