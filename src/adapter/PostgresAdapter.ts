@@ -1,5 +1,6 @@
 import { Client, ClientConfig } from 'pg'
 import fs from 'fs'
+import path from 'path'
 import liquibase from '../liquibase'
 import { BaseAdapter } from './BaseAdapter'
 import { liquibaseOptions } from './../config'
@@ -195,6 +196,92 @@ export class PostgresAdapter extends BaseAdapter {
     }
 
     return client.end()
+  }
+
+  /**
+   * @override
+   */
+  async _createDropSchemaFunction() {
+    const credentials = this.options.service.credentials
+    const defaultSchema = this.options.migrations.schema!.default
+    const client = new Client(getCredentialsForClient(credentials))
+
+    await client.connect()
+    await client.query(`SET search_path TO ${defaultSchema};`)
+    try {
+      var sql = fs.readFileSync(path.join(__dirname, './sql/drop_schema.sql')).toString();
+      sql = sql.replace('postgres', credentials.user);
+      await client.query(sql)
+      this.logger.log(`[cds-dbm] - Drop Schema function created`)
+    } catch (error) {
+      switch (error.code) {
+        default:
+          throw error
+      }
+    }
+    client.end()
+  }
+
+  /**
+   * @override
+   */
+  async _createCloneSchemaFunction() {
+      const credentials = this.options.service.credentials
+      const defaultSchema = this.options.migrations.schema!.default
+      const client = new Client(getCredentialsForClient(credentials))
+      await client.connect()
+      await client.query(`SET search_path TO ${defaultSchema};`)
+      
+    try {
+      var sql = fs.readFileSync(path.join(__dirname, './sql/clone_schema.sql')).toString();
+      sql = sql.replace('postgres', credentials.user);
+      await client.query(sql)
+      this.logger.log(`[cds-dbm] - Clone Schema function created`)
+    } catch (error) {
+      switch (error.code) {
+        default:
+          throw error
+      }
+    }
+    client.end()
+  }
+
+  /**
+  * @override
+  */
+  async _createSyncSchemaFunction() {
+      const credentials = this.options.service.credentials
+      const defaultSchema = this.options.migrations.schema!.default
+      const client = new Client(getCredentialsForClient(credentials))
+
+      await client.connect()
+      await client.query(`SET search_path TO ${defaultSchema};`)
+    try {
+      var sql = fs.readFileSync(path.join(__dirname, './sql/sync_schema.sql')).toString();
+      sql = sql.replace('postgres', credentials.user);
+      await client.query(sql)
+      this.logger.log(`[cds-dbm] - Sync Schema function created`)
+    } catch (error) {
+      switch (error.code) {
+        default:
+          throw error
+      }
+    }
+    client.end()
+  }
+
+  /**
+  * @override
+  */
+  async _synchronizeTenantSchemas(tenants:string[]) {
+    const credentials = this.options.service.credentials
+      const defaultSchema = this.options.migrations.schema!.default
+      const client = new Client(getCredentialsForClient(credentials))
+
+      await client.connect()
+      await client.query(`SET search_path TO 'information_schema';`);
+      const response = await client.query('SELECT schema_name FROM "schemata";');
+      
   }
 
   /**

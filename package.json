@@ -47,7 +47,8 @@
     "js-yaml": "^4.1.0",
     "liquibase": "^4.4.0",
     "pg": "^8.7.1",
-    "yargs": "^17.2.1"
+    "yargs": "^17.2.1",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "@commitlint/cli": "^15.0.0",

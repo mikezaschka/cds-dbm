@@ -1,8 +1,10 @@
 interface migrationOptions {
+  multitenant?: boolean,
   schema?: {
     default: string
     clone: string
     reference: string
+    tenants?: string[]
   }
   database?: {
     default: string

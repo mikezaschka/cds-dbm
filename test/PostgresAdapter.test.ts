@@ -17,7 +17,7 @@ import { BaseAdapter } from '../src/adapter/BaseAdapter'
 describe('PostgresAdapter', () => {
   beforeEach(() => {
     if (cds.services['db']) {
-
+      
       // @ts-ignore
       cds.services['db'].disconnect()
     }
