@@ -274,14 +274,43 @@ export class PostgresAdapter extends BaseAdapter {
   * @override
   */
   async _synchronizeTenantSchemas(tenants:string[]) {
+    interface schemata {
+      schema_name: string
+    };
     const credentials = this.options.service.credentials
-      const defaultSchema = this.options.migrations.schema!.default
-      const client = new Client(getCredentialsForClient(credentials))
+    const defaultSchema = this.options.migrations.schema!.default
+    const client = new Client(getCredentialsForClient(credentials))
 
-      await client.connect()
-      await client.query(`SET search_path TO 'information_schema';`);
-      const response = await client.query('SELECT schema_name FROM "schemata";');
-      
+    await client.connect()
+    await client.query(`SET search_path TO 'information_schema';`);
+    const response = await client.query('SELECT schema_name FROM "schemata";');
+    const existingSchemas = response.rows;
+    await client.query(`SET search_path TO ${defaultSchema};`)
+    
+      for (let i = 0; i < tenants.length; i++ ) {
+        try {
+          // Determine if schema already exists, and clone or sync it with default schema
+          const found = existingSchemas.find((schema: schemata) => schema.schema_name === tenants[i]);
+          let sql = undefined as string;
+          if (found) {
+            sql = `SELECT sync_schema('` + defaultSchema + `', '` + tenants[i] + `', '0');` as string;
+          } else {
+            sql = `SELECT clone_schema('` + defaultSchema + `', '` + tenants[i] + `', '0');` as string;
+          }
+          await client.query(sql)
+          this.logger.log(`[cds-dbm] - Tenant schema ` + tenants[i] + ` synchronized.`)
+        } catch (error) {
+          switch (error.code) {
+            case "42601":
+              throw error
+            default:
+              throw error
+          }
+          
+        }
+      }  
+
+    client.end()
   }
 
   /**

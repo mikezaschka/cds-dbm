@@ -112,6 +112,27 @@ describe('PostgresAdapter', () => {
       expect(existingTablesInPostgres.length).toBeGreaterThan(0)
     })
 
+    it('should create the database if the create-db option is given and Clone 2 Tenants', async () => {
+      options.migrations.multitenant = true;
+      options.migrations.schema.tenants = ['tenant0', 'tenant1'];
+      await dropDatabase(options.service.credentials)
+      await adapter.deploy({ createDb: true })
+
+      // check default schema
+      const existingTablesInPostgres = await getTableNamesFromPostgres(options)
+      expect(existingTablesInPostgres.length).toBeGreaterThan(0)
+
+      // check tenant0
+      const existingTablesInPostgresTenant0 = await getTableNamesFromPostgres(options, options.migrations.schema.tenants[0])
+      expect(existingTablesInPostgresTenant0.length).toBeGreaterThan(0)
+
+      // check tenant1
+      const existingTablesInPostgresTenant1 = await getTableNamesFromPostgres(options, options.migrations.schema.tenants[1])
+      expect(existingTablesInPostgresTenant1.length).toBeGreaterThan(0)
+
+      options.migrations.multitenant = false;
+    })
+
     it('should create the complete data model in an empty database', async () => {
       await adapter.drop({ dropAll: true })
       await adapter.deploy({})
@@ -132,6 +153,36 @@ describe('PostgresAdapter', () => {
       expect(parseInt(countResponse[0].myCount)).toEqual(2)
     })
 
+    describe('- handling multitenant deltas -', () => {
+      beforeEach(async () => {
+        options.migrations.deploy.undeployFile = ''
+        options.service.model = ['./test/app/srv/beershop-service.cds']
+        await adapter.drop({ dropAll: true })
+        await adapter.deploy({})
+      })
+
+      it('should add additional tables and views and sync tenants', async () => {
+        // load an updated model
+        options.migrations.multitenant = true;
+        options.migrations.schema.tenants = ['tenant0', 'tenant1'];
+
+        options.service.model = ['./test/app/srv/beershop-service_addTables.cds']
+        adapter = await adapterFactory('db', options)
+        await adapter.deploy({})
+
+        // Existing Tables in Tenant0
+        const existingTablesInPostgres = await getTableNamesFromPostgres(options, options.migrations.schema.tenants[0])
+        const tableAndViewNamesFromCds = await getEntityNamesFromCds('db', options.service.model[0])
+
+        for (const entity of tableAndViewNamesFromCds) {
+          expect(existingTablesInPostgres.map((i) => i.table_name)).toContain(entity.name.toLowerCase())
+        }
+        options.migrations.multitenant = false;
+        options.migrations.schema.tenants = [];
+      })
+
+    });
+
     describe('- handling deltas -', () => {
       beforeEach(async () => {
         options.migrations.deploy.undeployFile = ''
@@ -146,6 +197,20 @@ describe('PostgresAdapter', () => {
         cds.services['db'].disconnect()
       })
       it('should add additional tables and views', async () => {
+        // load an updated model
+        options.service.model = ['./test/app/srv/beershop-service_addTables.cds']
+        adapter = await adapterFactory('db', options)
+        await adapter.deploy({})
+
+        const existingTablesInPostgres = await getTableNamesFromPostgres(options)
+        const tableAndViewNamesFromCds = await getEntityNamesFromCds('db', options.service.model[0])
+
+        for (const entity of tableAndViewNamesFromCds) {
+          expect(existingTablesInPostgres.map((i) => i.table_name)).toContain(entity.name.toLowerCase())
+        }
+      })
+      
+      it('should Sync Multitenant schemas ', async () => {;
         // load an updated model
         options.service.model = ['./test/app/srv/beershop-service_addTables.cds']
         adapter = await adapterFactory('db', options)
