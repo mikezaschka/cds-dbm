@@ -247,6 +247,36 @@ cds-dbm diff --to-file db/diff.txt
 
 <a name="command_build"></a>
 
+**Multitenancy Support**
+
+Multitenancy support is currently experimental and not intended for produtive use. To enable multitenant deployments, enable the multitenant boolean as shown below.
+
+On deployment, schemas `tenant1` and `tenant2` will be created as clones of default schema `public`.
+
+Currently, tenant data will be lost on re-deployment. a fix is being worked on... 
+
+```JSON
+  "cds": {
+    "migrations": {
+      "db": {
+        "multitenant": true,
+        "schema": {
+          "default": "public",
+          "clone": "_cdsdbm_clone",
+          "reference": "_cdsdbm_ref",
+          "tenants": [ "tenant1", "tenant2"]
+        },
+        "deploy": {
+          "tmpFile": "tmp/_autodeploy.json",
+          "undeployFile": "db/undeploy.json"
+        }
+      }
+    }
+  }
+```
+
+
+
 ### `Custom Build Task`
 
 Executes the defined cds build task, either from a .cdsrc or the package json. `cds-dbm` comes with a pre-baked build task, to deploy the data model to a PostgreSQL database on SAP BTP Cloud Foundry.

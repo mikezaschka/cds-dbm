@@ -293,11 +293,20 @@ export class PostgresAdapter extends BaseAdapter {
           const found = existingSchemas.find((schema: schemata) => schema.schema_name === tenants[i]);
           let sql = undefined as string;
           if (found) {
-            sql = `SELECT sync_schema('` + defaultSchema + `', '` + tenants[i] + `', '0');` as string;
+            
+            // Sync Schema not functioning - research how to sync without data lose
+            //sql = `SELECT sync_schema('` + defaultSchema + `', '` + tenants[i] + `', '0');` as string;
+            
+            // For now Drop & Clone
+            sql = `SELECT drop_schema('` + tenants[i] + `');` as string;
+            await client.query(sql)
+            sql = `SELECT clone_schema('` + defaultSchema + `', '` + tenants[i] + `', '0');` as string;
+            await client.query(sql)
           } else {
             sql = `SELECT clone_schema('` + defaultSchema + `', '` + tenants[i] + `', '0');` as string;
+            await client.query(sql)
           }
-          await client.query(sql)
+          
           this.logger.log(`[cds-dbm] - Tenant schema ` + tenants[i] + ` synchronized.`)
         } catch (error) {
           switch (error.code) {
