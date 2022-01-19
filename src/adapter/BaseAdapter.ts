@@ -292,8 +292,8 @@ export abstract class BaseAdapter {
     // Synchronize all Tenant schemas with default after deployment
     if (this.options.migrations.multitenant) {
       await this._synchronizeTenantSchemas(this.options.migrations.schema?.tenants)
-      const message = `[cds-dbm] - tenant schemas synchronized`
-      this.logger.log(message);
+      //const message = `[cds-dbm] - tenant schemas synchronized`
+      //this.logger.log(message);
     };
 
 

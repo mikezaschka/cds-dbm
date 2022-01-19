@@ -212,7 +212,7 @@ export class PostgresAdapter extends BaseAdapter {
       var sql = fs.readFileSync(path.join(__dirname, './sql/drop_schema.sql')).toString();
       sql = sql.replace('postgres', credentials.user);
       await client.query(sql)
-      this.logger.log(`[cds-dbm] - Drop Schema function created`)
+      //this.logger.log(`[cds-dbm] - Drop Schema function created`)
     } catch (error) {
       switch (error.code) {
         default:
@@ -236,7 +236,7 @@ export class PostgresAdapter extends BaseAdapter {
       var sql = fs.readFileSync(path.join(__dirname, './sql/clone_schema.sql')).toString();
       sql = sql.replace('postgres', credentials.user);
       await client.query(sql)
-      this.logger.log(`[cds-dbm] - Clone Schema function created`)
+      //this.logger.log(`[cds-dbm] - Clone Schema function created`)
     } catch (error) {
       switch (error.code) {
         default:
@@ -260,7 +260,7 @@ export class PostgresAdapter extends BaseAdapter {
       var sql = fs.readFileSync(path.join(__dirname, './sql/sync_schema.sql')).toString();
       sql = sql.replace('postgres', credentials.user);
       await client.query(sql)
-      this.logger.log(`[cds-dbm] - Sync Schema function created`)
+      //this.logger.log(`[cds-dbm] - Sync Schema function created`)
     } catch (error) {
       switch (error.code) {
         default:
@@ -307,7 +307,7 @@ export class PostgresAdapter extends BaseAdapter {
             await client.query(sql)
           }
           
-          this.logger.log(`[cds-dbm] - Tenant schema ` + tenants[i] + ` synchronized.`)
+          this.logger.log(`[cds-dbm] - Tenant ` + tenants[i] + ` synchronized.`)
         } catch (error) {
           switch (error.code) {
             case "42601":
