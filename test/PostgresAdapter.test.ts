@@ -112,9 +112,9 @@ describe('PostgresAdapter', () => {
       expect(existingTablesInPostgres.length).toBeGreaterThan(0)
     })
 
-    it('should create the database if the create-db option is given and Clone 2 Tenants', async () => {
+    it('should create the database if the create-db option is given and Clone Tenant', async () => {
       options.migrations.multitenant = true;
-      options.migrations.schema.tenants = ['tenant0', 'tenant1'];
+      options.migrations.schema.tenants = ['tenant'];
       await dropDatabase(options.service.credentials)
       await adapter.deploy({ createDb: true })
 
@@ -122,13 +122,9 @@ describe('PostgresAdapter', () => {
       const existingTablesInPostgres = await getTableNamesFromPostgres(options)
       expect(existingTablesInPostgres.length).toBeGreaterThan(0)
 
-      // check tenant0
+      // check tenant
       const existingTablesInPostgresTenant0 = await getTableNamesFromPostgres(options, options.migrations.schema.tenants[0])
       expect(existingTablesInPostgresTenant0.length).toBeGreaterThan(0)
-
-      // check tenant1
-      const existingTablesInPostgresTenant1 = await getTableNamesFromPostgres(options, options.migrations.schema.tenants[1])
-      expect(existingTablesInPostgresTenant1.length).toBeGreaterThan(0)
 
       options.migrations.multitenant = false;
     })
@@ -164,7 +160,7 @@ describe('PostgresAdapter', () => {
       it('should add additional tables and views and sync tenants', async () => {
         // load an updated model
         options.migrations.multitenant = true;
-        options.migrations.schema.tenants = ['tenant0', 'tenant1'];
+        options.migrations.schema.tenants = ['tenant'];
 
         options.service.model = ['./test/app/srv/beershop-service_addTables.cds']
         adapter = await adapterFactory('db', options)

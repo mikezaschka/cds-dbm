@@ -11,12 +11,13 @@
     "test:pg:up": "docker-compose -f test/app/docker.postgres.yml up -d",
     "test:pg:down": "docker-compose -f test/app/docker.postgres.yml down",
     "lint": "prettier -c . && eslint '*.{js,ts,tsx}'",
-    "build": "run-s clean:ts build:ts build:copy:assets",
+    "build": "run-s clean:ts build:ts build:copy:assets && npm run copy:sql",
     "clean:ts": "npx rimraf dist",
     "build:ts": "tsc -b",
     "build:copy:assets": "npx ts-node util/copystaticassets.ts",
     "release": "standard-version",
-    "watch:ts": "tsc -w"
+    "watch:ts": "tsc -w",
+    "copy:sql": "copyfiles -u 1 src/adapter/sql/*.sql dist"
   },
   "bin": {
     "cds-dbm": "dist/cli.js"
@@ -46,9 +47,9 @@
     "handlebars": "~4.7.7",
     "js-yaml": "^4.1.0",
     "liquibase": "^4.4.0",
+    "path": "^0.12.7",
     "pg": "^8.7.1",
-    "yargs": "^17.2.1",
-    "path": "^0.12.7"
+    "yargs": "^17.2.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^15.0.0",
@@ -56,6 +57,7 @@
     "@types/jest": "^27.0.2",
     "@types/yargs": "^17.0.6",
     "cds-pg": "0.1.20",
+    "copyfiles": "^2.4.1",
     "eslint": "^8.2.0",
     "eslint-plugin-jest": "^25.2.4",
     "express": "^4.17.1",
@@ -70,8 +72,8 @@
     "standard-version": "^9.3.2",
     "supertest": "^6.1.6",
     "ts-jest": "^27.0.7",
-    "typescript": "^4.5.2",
     "ts-node": "~10.4.0",
+    "typescript": "^4.5.2",
     "underscore": "^1.13.1",
     "underscore.string": "^3.3.5",
     "uuid": "^8.3.2"
