@@ -288,14 +288,26 @@ export abstract class BaseAdapter {
     liquibaseOptions.changeLogFile = temporaryChangelogFile
 
     const updateSQL: any = await liquibase(liquibaseOptions).run(updateCmd)
+    
+    if (this.options.migrations.multitenant) {
+      for (let i = 0; i < this.options.migrations.schema?.tenants.length; i++) {
+        try {
+          liquibaseOptions.defaultSchemaName = this.options.migrations.schema?.tenants[i]
+          await liquibase(liquibaseOptions).run(updateCmd)
+        } catch (err) {
+          console.log(err.message)
+        }
+      }
+    }
 
+    /*
     // Synchronize all Tenant schemas with default after deployment
     if (this.options.migrations.multitenant) {
       await this._synchronizeTenantSchemas(this.options.migrations.schema?.tenants)
       //const message = `[cds-dbm] - tenant schemas synchronized`
       //this.logger.log(message);
     };
-
+    */
 
     if (!dryRun) {
       this.logger.log(`[cds-dbm] - delta successfully deployed to the database`)
