@@ -15,6 +15,7 @@
         "kind": "database"
       },
       "database": {
+        "dialect": "plain",
         "impl": "cds-pg",
         "model": "csn.json"
       }
