@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.29](https://github.com/mikezaschka/cds-dbm/compare/v0.0.28...v0.0.29) (2022-03-15)
+
+
+### Bug Fixes
+
+* upgrade jar files to fix vulnerability ([7a57d2a](https://github.com/mikezaschka/cds-dbm/commit/7a57d2a5d62716446dab9b29de8a7ed41963b889))
+
 ### [0.0.28](https://github.com/mikezaschka/cds-dbm/compare/v0.0.27...v0.0.28) (2022-01-12)
 
 
