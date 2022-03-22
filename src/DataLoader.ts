@@ -104,7 +104,7 @@ export class DataLoader {
     for (const row of rows) {
       const keyColumns = Object.keys(entity.keys)
       let key = keyColumns.reduce((set, col, index) => {
-        set[col] = row[lowercaseColumns.indexOf(col)]
+        set[col] = row[lowercaseColumns.indexOf(col.toLowerCase())]
         return set
       }, {})
 
