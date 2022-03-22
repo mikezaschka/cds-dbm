@@ -1,6 +1,6 @@
 {
   "name": "cds-dbm",
-  "version": "0.0.33",
+  "version": "0.0.34",
   "description": "Database deployment and migrations for SAP CAP",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,8 @@
     "clean:ts": "npx rimraf dist",
     "build:ts": "tsc -b",
     "build:copy:assets": "npx ts-node util/copystaticassets.ts",
-    "release": "standard-version",
+    "release:version": "standard-version",
+    "release": "run-s build release:version",
     "watch:ts": "tsc -w"
   },
   "bin": {
