@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.33](https://github.com/mikezaschka/cds-dbm/compare/v0.0.32...v0.0.33) (2022-03-22)
+
+
+### Bug Fixes
+
+* delta update condition now respects single records ([cf180fb](https://github.com/mikezaschka/cds-dbm/commit/cf180fb7252c37d4f2f0b62d9ec6588f47ef93cc))
+
 ### [0.0.32](https://github.com/mikezaschka/cds-dbm/compare/v0.0.31...v0.0.32) (2022-03-22)
 
 
