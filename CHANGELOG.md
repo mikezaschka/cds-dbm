@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.35](https://github.com/mikezaschka/cds-dbm/compare/v0.0.34...v0.0.35) (2022-03-22)
+
+
+### Bug Fixes
+
+* delta update column matching fully lowercase ([4e6be32](https://github.com/mikezaschka/cds-dbm/commit/4e6be32f3cd2f05d9ed28ce52ce3ba54b63420bc))
+
 ### [0.0.34](https://github.com/mikezaschka/cds-dbm/compare/v0.0.33...v0.0.34) (2022-03-22)
 
 ### [0.0.33](https://github.com/mikezaschka/cds-dbm/compare/v0.0.32...v0.0.33) (2022-03-22)
