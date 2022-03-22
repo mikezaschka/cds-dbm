@@ -100,22 +100,23 @@ export class DataLoader {
    * @param cols
    */
   private async _performDeltaUpdate(entity, rows, cols) {
+    const lowercaseColumns = cols.map((c) => c.toLowerCase())
     for (const row of rows) {
       const keyColumns = Object.keys(entity.keys)
-      let where = keyColumns.reduce((set, col, index) => {
-        set[col] = row[cols.indexOf(col)]
+      let key = keyColumns.reduce((set, col, index) => {
+        set[col] = row[lowercaseColumns.indexOf(col)]
         return set
       }, {})
 
-      let record = await SELECT.from(entity.name).columns(keyColumns.join(',')).where(where)
-      if (record.length > 0) {
+      let record = await SELECT.one.from(entity.name, key)
+      if (record > 0) {
         let set = cols.reduce((set, col, index) => {
           if (typeof row[index] !== 'undefined') {
             set[col] = row[index]
           }
           return set
         }, {})
-        await UPDATE(entity.name).set(set).where(where)
+        await UPDATE(entity.name).set(set).where(key)
       } else {
         await INSERT.into(entity).columns(cols).values(row)
       }
