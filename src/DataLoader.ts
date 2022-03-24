@@ -109,7 +109,7 @@ export class DataLoader {
       }, {})
 
       let record = await SELECT.one.from(entity.name, key)
-      if (record && (Array.isArray(record) && record.length > 0)) {
+      if (record && !Array.isArray(record)) {
         let set = cols.reduce((set, col, index) => {
           if (typeof row[index] !== 'undefined') {
             set[col] = row[index]
