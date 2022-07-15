@@ -40,7 +40,7 @@
   },
   "homepage": "https://github.com/mikezaschka/cds-dbm#readme",
   "dependencies": {
-    "@sap/cds": "^5.8.3",
+    "@sap/cds": "^6.0.3",
     "@types/js-yaml": "^4.0.5",
     "@types/pg": "^8.6.5",
     "@types/sqlite3": "^3.1.8",
