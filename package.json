@@ -40,7 +40,7 @@
   },
   "homepage": "https://github.com/mikezaschka/cds-dbm#readme",
   "dependencies": {
-    "@sap/cds": "^5.8.3",
+    "@sap/cds": "^6.5.0",
     "@types/js-yaml": "^4.0.5",
     "@types/pg": "^8.6.5",
     "@types/sqlite3": "^3.1.8",
@@ -55,7 +55,7 @@
     "@commitlint/config-conventional": "^16.2.1",
     "@types/jest": "^27.4.1",
     "@types/yargs": "^17.0.9",
-    "cds-pg": "0.1.26",
+    "cds-pg": "https://github.com/ryegrosT8/cds-pg.git",
     "eslint": "^8.11.0",
     "eslint-plugin-jest": "^26.1.1",
     "express": "^4.17.3",
