@@ -1,4 +1,5 @@
 import foss from '@sap/cds-foss'
+import cds from '@sap/cds'
 const fs = foss('fs-extra')
 import { chmodSync, existsSync } from 'fs'
 import path from 'path'
@@ -44,7 +45,7 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerInternal {
     const { src, dest } = this.task
     const destGen = this.isStagingBuild() ? dest : path.join(dest, FOLDER_GEN)
     const model = await this.model()
-    const extCsn = this.cds.compile.to.json(model)
+    const extCsn = await cds.compile.to.json(model)
     await this.write(extCsn).to(path.join(destGen, 'csn.json'))
 
     await this._copyNativeContent(src, dest)
