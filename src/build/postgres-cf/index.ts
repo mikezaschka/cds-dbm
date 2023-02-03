@@ -3,8 +3,9 @@ const fs = foss('fs-extra')
 import { chmodSync, existsSync } from 'fs'
 import path from 'path'
 const BuildTaskHandlerInternal = require('@sap/cds/bin/build/provider/buildTaskHandlerInternal')
-const { getHanaDbModuleDescriptor } = require('@sap/cds/bin/build/mtaUtil')
+const { getHanaDbModuleDescriptor } = require('@sap/cds/bin/deploy/to-hana/mtaUtil')
 const { FOLDER_GEN, FILE_EXT_CDS } = require('@sap/cds/bin/build/constants')
+
 
 const DEBUG = process.env.DEBUG
 const FILE_NAME_MANIFEST_YML = 'manifest.yml'
