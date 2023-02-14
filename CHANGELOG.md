@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0](https://github.com/mikezaschka/cds-dbm/compare/v0.0.36...v0.1.0) (2023-02-14)
+
+
+### Bug Fixes
+
+* cds no longer provided as super property ([7d49be0](https://github.com/mikezaschka/cds-dbm/commit/7d49be015d65114fa60915bc2c23fcb66e1d46f5))
+* getHanaDbModuleDescriptor path on @sap/cds ([a0f2834](https://github.com/mikezaschka/cds-dbm/commit/a0f2834973e51563ff1674190b4ae00ae24d76ac))
+* increased jest timeout ([4fb6287](https://github.com/mikezaschka/cds-dbm/commit/4fb628779bf289db2bbe3eee43cdd648a36d5e9e))
+* Update CDS version and fix tsconfig compile ([ab62510](https://github.com/mikezaschka/cds-dbm/commit/ab62510e1dbe1adeefb012e0f8a437d83623d4fc))
+* update cds-pg to public version ([239ca69](https://github.com/mikezaschka/cds-dbm/commit/239ca692a6be442fb78e0efaca144405ef0c5a3d))
+
 ### [0.0.36](https://github.com/mikezaschka/cds-dbm/compare/v0.0.35...v0.0.36) (2022-03-25)
 
 ### [0.0.35](https://github.com/mikezaschka/cds-dbm/compare/v0.0.34...v0.0.35) (2022-03-22)
