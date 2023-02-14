@@ -2,6 +2,7 @@
   "exclude": ["node_modules"],
   "include": ["src/**/*.ts"],
   "compilerOptions": {
+    "skipLibCheck": true,                     // Used to not evaluate node_modules foreign lib's types (ps. "exclude" option is not enough)
     /* Basic Options */
     // "incremental": true,                   /* Enable incremental compilation */
     "watch": true,

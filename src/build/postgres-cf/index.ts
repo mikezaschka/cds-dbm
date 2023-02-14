@@ -1,10 +1,12 @@
 import foss from '@sap/cds-foss'
+import cds from '@sap/cds'
 const fs = foss('fs-extra')
 import { chmodSync, existsSync } from 'fs'
 import path from 'path'
 const BuildTaskHandlerInternal = require('@sap/cds/bin/build/provider/buildTaskHandlerInternal')
-const { getHanaDbModuleDescriptor } = require('@sap/cds/bin/build/mtaUtil')
+const { getHanaDbModuleDescriptor } = require('@sap/cds/bin/deploy/to-hana/mtaUtil')
 const { FOLDER_GEN, FILE_EXT_CDS } = require('@sap/cds/bin/build/constants')
+
 
 const DEBUG = process.env.DEBUG
 const FILE_NAME_MANIFEST_YML = 'manifest.yml'
@@ -43,7 +45,7 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerInternal {
     const { src, dest } = this.task
     const destGen = this.isStagingBuild() ? dest : path.join(dest, FOLDER_GEN)
     const model = await this.model()
-    const extCsn = this.cds.compile.to.json(model)
+    const extCsn = await cds.compile.to.json(model)
     await this.write(extCsn).to(path.join(destGen, 'csn.json'))
 
     await this._copyNativeContent(src, dest)

@@ -2,7 +2,7 @@ import fs from 'fs'
 import { v4 as uuid } from 'uuid'
 import adapterFactory from '../src/adapter'
 import { configOptions } from '../src/config'
-import cds_deploy from '@sap/cds/lib/deploy'
+import cds_deploy from '@sap/cds/lib/dbs/cds-deploy'
 import {
   getTableNamesFromPostgres,
   getCompiledSQL,
