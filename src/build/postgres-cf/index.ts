@@ -88,10 +88,7 @@ class PostgresCfModuleBuilder extends BuildTaskHandlerInternal {
       }
       const extname = path.extname(entry)
       return (
-        (extname !== FILE_EXT_CSV &&
-          extname !== FILE_EXT_CDS &&
-          // @ts-ignore
-          entry !== cds.default.build['outputfile']) ||
+        (extname !== FILE_EXT_CSV && extname !== FILE_EXT_CDS && entry !== cds.env.build['outputfile']) ||
         (extname === FILE_EXT_CSV && !entry.startsWith(dbCsvDir) && !entry.startsWith(dbCsvDir))
       )
     })) || []
