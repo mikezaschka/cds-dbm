@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/mikezaschka/cds-dbm/compare/v0.1.1...v0.1.2) (2023-02-20)
+
+
+### Bug Fixes
+
+* cannot read properties of undefined ([c57996b](https://github.com/mikezaschka/cds-dbm/commit/c57996b5fee995bb616c556e1e9e5293d7aee80b))
+* failed to load model undefined issue ([ceff9e7](https://github.com/mikezaschka/cds-dbm/commit/ceff9e734d3b998e37661666aa3e4500fbefb8be))
+* final correction ([ccca821](https://github.com/mikezaschka/cds-dbm/commit/ccca821027383d67c9462599c2342bc890c01610))
+* run for node 18 ([e1ce564](https://github.com/mikezaschka/cds-dbm/commit/e1ce5645fb4c875424e3cbfa9c8620e13a7e60e9))
+* use cds.env.build['outputfile'] ([6e26f63](https://github.com/mikezaschka/cds-dbm/commit/6e26f639b601f4d3c4ddd50b38f6563b24198d95))
+
 ### [0.1.1](https://github.com/mikezaschka/cds-dbm/compare/v0.1.0...v0.1.1) (2023-02-14)
 
 ## [0.1.0](https://github.com/mikezaschka/cds-dbm/compare/v0.0.36...v0.1.0) (2023-02-14)
