@@ -279,13 +279,13 @@ export abstract class BaseAdapter {
   private async initCds() {
     try {
       this.cdsModel = await cds.load(this.options.service.model)
-      await cds.serve('all')
     } catch (error) {
       throw new Error(`[cds-dbm] - failed to load model ${this.options.service.model}`)
     }
 
     this.cdsSQL = cds.compile.to.sql(this.cdsModel) as unknown as string[]
     this.cdsSQL.sort(sortByCasadingViews)
+
   }
 
   /**
