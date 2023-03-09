@@ -2,6 +2,7 @@ node_modules
 dist
 tmp
 .eslintcache
+.vscode
 
 
 .cds_gen.log

@@ -1,8 +1,7 @@
-import * as cdsg from '@sap/cds'
+import cds from '@sap/cds'
 import { BaseAdapter } from './adapter/BaseAdapter'
-const cds = cdsg as any
+// @ts-ignore
 const { fs, path, isdir, read } = cds.utils
-const { promisify } = require('util')
 const { readdir } = fs.promises
 
 // TS: Fix UPDATE issue
@@ -71,6 +70,7 @@ export class DataLoader {
    * @param src
    */
   private async _insertOrUpdateData(entity, src) {
+    // @ts-ignore
     let [cols, ...rows] = cds.parse.csv(src)
     UPDATE as unknown
     if (this.isFullMode) {
@@ -89,7 +89,8 @@ export class DataLoader {
   private async _performFullUpdate(entity, rows, cols) {
     await this.adapter._truncateTable(entity.name.replace(/\.|-/g, '_'))
     for (const row of rows) {
-      await INSERT.into(entity).columns(cols).values(row)
+      await cds.serve('all')
+      await INSERT.into(entity.name).columns(cols).values(row)
     }
   }
 
@@ -118,7 +119,7 @@ export class DataLoader {
         }, {})
         await UPDATE(entity.name).set(set).where(key)
       } else {
-        await INSERT.into(entity).columns(cols).values(row)
+        await INSERT.into(entity.name).columns(cols).values(row)
       }
     }
   }
