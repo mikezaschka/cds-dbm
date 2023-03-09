@@ -1,6 +1,6 @@
 {
   "name": "cds-dbm",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Database deployment and migrations for SAP CAP",
   "main": "index.js",
   "scripts": {

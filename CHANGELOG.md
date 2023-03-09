@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.3](https://github.com/mikezaschka/cds-dbm/compare/v0.1.2...v0.1.3) (2023-03-09)
+
+
+### Bug Fixes
+
+* serve cds before loading data fix [#308](https://github.com/mikezaschka/cds-dbm/issues/308) ([3236a16](https://github.com/mikezaschka/cds-dbm/commit/3236a16d6d9cc534f2c716ec01745f375d97cce1))
+
 ### [0.1.2](https://github.com/mikezaschka/cds-dbm/compare/v0.1.1...v0.1.2) (2023-02-20)
 
 
