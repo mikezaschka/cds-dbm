@@ -12,7 +12,8 @@
   "cds": {
     "requires": {
       "db": {
-        "kind": "database"
+        "kind": "database",
+        "dialect": "plain"
       },
       "database": {
         "dialect": "plain",
