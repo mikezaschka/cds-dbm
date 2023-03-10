@@ -280,7 +280,6 @@ cds build
 
 This will generate a specifc set of files into the `gen/db` (or any other configured) folder, that will be deployed to SAP BTP CF environment.
 
-
 An example configuration for a `mta.yml` leveraging the build fragments:
 
 ```yaml
@@ -288,7 +287,7 @@ An example configuration for a `mta.yml` leveraging the build fragments:
     type: custom
     path: gen/db
     parameters:
-      buildpacks: [https://github.com/cloudfoundry/apt-buildpack#v0.2.2, nodejs_buildpack] 
+      buildpacks: [https://github.com/cloudfoundry/apt-buildpack#v0.2.2, nodejs_buildpack]
       no-route: true
       no-start: true
       disk-quota: 2GB
@@ -297,11 +296,11 @@ An example configuration for a `mta.yml` leveraging the build fragments:
       - name: deploy_to_postgresql
         command: ./deploy.sh
         disk-quota: 2GB
-        memory: 512MB      
+        memory: 512MB
     build-parameters:
       ignore: ["node_modules/"]
     requires:
-      - name: devtoberfest-database 
+      - name: devtoberfest-database
 
 resources:
   - name: devtoberfest-database
@@ -311,7 +310,9 @@ resources:
       service-plan: trial
       skip-service-updates:
         parameters: true
-    type: org.cloudfoundry.managed-service      
+      service-tags:
+        - plain
+    type: org.cloudfoundry.managed-service
 ```
 
 ## Sponsors

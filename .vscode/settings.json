@@ -1,3 +1,4 @@
 {
-  "jest.autoEnable": false
+  "jest.autoEnable": false,
+  "SAP HANA Database Explorer.displaySapWebAnalyticsStartupNotification": false
 }
