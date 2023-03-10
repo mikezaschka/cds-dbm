@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/mikezaschka/cds-dbm/compare/v0.1.3...v0.1.4) (2023-03-10)
+
+
+### Bug Fixes
+
+* add dialect to cds-pg template package ([dfee328](https://github.com/mikezaschka/cds-dbm/commit/dfee3289298d2ce555d9eeb8faaf55e4a3e15f3d))
+
 ### [0.1.3](https://github.com/mikezaschka/cds-dbm/compare/v0.1.2...v0.1.3) (2023-03-09)
 
 
