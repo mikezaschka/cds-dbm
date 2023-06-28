@@ -1,4 +1,4 @@
-> <h3>cds-dbm is deprecated. Starting with version 7.0.0 @sap/cds now has native support for PostgreSQL. Please use the official database adapter @cap-js/postgres and check out the <a href="https://cap.cloud.sap/docs/guides/databases-postgres">official documentation</a> for more details.</h3> 
+> <h3>cds-dbm is deprecated and will no longer be actively maintained. Starting with version 7.0.0 @sap/cds now has native support for PostgreSQL. Please use the official database adapter @cap-js/postgres and check out the <a href="https://cap.cloud.sap/docs/guides/databases-postgres">official documentation</a> for more details.</h3> 
 
 # `cds-dbm` (Core Data Services – Database Migrations)
 
