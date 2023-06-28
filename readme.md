@@ -1,3 +1,5 @@
+> <h3>cds-dbm is deprecated. Starting with version 7.0.0 @sap/cds now has native support for PostgreSQL. Please use the official database adapter @cap-js/postgres and check out the <a href="https://cap.cloud.sap/docs/guides/databases-postgres">official documentation</a> for more details.</h3> 
+
 # `cds-dbm` (Core Data Services – Database Migrations)
 
 `cds-dbm` is a package that extends the database tooling capabilities of the <a href="https://cap.cloud.sap/docs/about/">**SAP Cloud Application Programming Model's**</a> Node.js Service SDK (<a href="https://www.npmjs.com/package/@sap/cds">@sap/cds</a>) for relational databases other than the native supported ones (SAP HANA and SQLite).
